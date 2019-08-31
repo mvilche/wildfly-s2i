@@ -1,0 +1,342 @@
+    ##comienzo Template
+  apiVersion: v1
+  kind: Template
+  metadata:
+    name: wildlfy-s2i-mvilche
+    labels:
+      template: wildlfy-s2i-mvilche
+      autor: "Martin_Fabrizzio_Vilche"
+    annotations:
+      openshift.io/display-name: "wildlfy-s2i-mvilche"
+      iconClass: "icon-wildfly"
+      description: >-
+        Compilador de imagenes para microservicios basados en java 11 y maven 3.6.0
+        Martin Fabrizzio Vilche.
+        https://github.com/mvilche.
+
+  objects:
+
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        app: "${APP_NAME}"
+      name: "${APP_NAME}"
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        app: ${APP_NAME}
+        deploymentconfig: ${APP_NAME}
+      strategy:
+        activeDeadlineSeconds: 21600
+        resources: {}
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            app: ${APP_NAME}
+            deploymentconfig: ${APP_NAME}
+        spec:
+          containers:
+            - env:
+                - name: APP_OPTIONS
+                  value: ${APP_OPTIONS}
+                - name: JAVA_OPTS
+                  value: ${JAVA_OPTS}
+              image: "${APP_NAME}:latest"
+              imagePullPolicy: Always
+              name: ${APP_NAME}
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+                - containerPort: 8778
+                  protocolo: TCP
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          terminationGracePeriodSeconds: 30
+      test: false
+      triggers:
+        - type: ConfigChange
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${APP_NAME}
+            from:
+              kind: ImageStreamTag
+              name: "${APP_NAME}:latest"
+          type: ImageChange
+
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: ${APP_NAME}-s2i
+    spec:
+      completionDeadlineSeconds: 1800
+      failedBuildsHistoryLimit: 5
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${APP_NAME}-s2i:latest
+      postCommit: {}
+      resources: {}
+      runPolicy: Serial
+      source:
+        git:
+          uri: ${REPO_GIT}
+          ref: ${BRANCH_GIT}
+        type: Git
+        sourceSecret:
+          name: ${SOURCE_SECRET}
+      strategy:
+        sourceStrategy:
+          incremental: true
+          forcePull: true
+          env:
+            - name: NEXUS_MIRROR_URL
+              value: ${NEXUS_MIRROR_URL}
+            - name: EXTRA_REPO
+              value: ${EXTRA_REPO}
+            - name: MVN_OPTS
+              value: ${MVN_OPTS}
+            - name: JAVA_OPTS
+              value: '-Dfile.encoding=UTF8 -XX:+ExitOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -Djava.net.preferIPv4Stack=true'
+          from:
+            kind: ImageStreamTag
+            name: wildfly-s2i:latest
+        type: Source
+      successfulBuildsHistoryLimit: 5
+      triggers:
+        - type: ConfigChange
+
+
+
+
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: ${APP_NAME}-runtime
+    spec:
+      completionDeadlineSeconds: 1800
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${APP_NAME}:latest
+      source:
+        type: Dockerfile
+        dockerfile: |-
+                FROM wildfly-runtime:latest
+                COPY deployments /opt/wildfly/standalone
+        images:
+        - from:
+            kind: ImageStreamTag
+            name: ${APP_NAME}-s2i:latest
+          paths:
+          - sourcePath: /opt/wildfly/standalone/deployments
+            destinationDir: "."
+      strategy:
+        dockerStrategy:
+          from:
+            kind: ImageStreamTag
+            name: wildfly-runtime:latest
+        type: Docker
+      triggers:
+      - type: "imageChange"
+        imageChange:
+          from:
+            kind: "ImageStreamTag"
+            name: "${APP_NAME}-s2i:latest"
+
+
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: ${APP_NAME}
+    spec:
+      ports:
+        - name: 8080-tcp
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+        - name: jolokia
+          port: 8778
+          protocol: TCP
+          targetPort: 8778
+        - name: 8009-ajp
+          port: 8009
+          protocol: TCP
+          targetPort: 8009
+      selector:
+        app: ${APP_NAME}
+        deploymentconfig: ${APP_NAME}
+      sessionAffinity: None
+      type: ClusterIP
+
+
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: ${APP_NAME}
+    spec:
+      host: ${DOMINIO}
+      port:
+        targetPort: 8080-tcp
+      to:
+        kind: Service
+        name: ${APP_NAME}
+        weight: 100
+      wildcardPolicy: None
+
+
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: ${APP_NAME}
+    spec: {}
+
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: ${APP_NAME}-s2i
+    spec: {}
+
+
+######
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      labels:
+        app: ${APP_NAME}
+        build: wildfly-s2i
+      name: wildfly-s2i
+    spec:
+      failedBuildsHistoryLimit: 5
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: 'wildfly-s2i:latest'
+      postCommit: {}
+      resources: {}
+      runPolicy: Serial
+      source:
+        contextDir: jdk11
+        git:
+          ref: master
+          uri: 'https://github.com/mvilche/wildfly-s2i.git'
+        type: Git
+      strategy:
+        dockerStrategy:
+          dockerfilePath: Dockerfile
+        type: Docker
+      successfulBuildsHistoryLimit: 5
+      triggers:
+        - type: ConfigChange
+
+
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: wildfly-s2i
+    spec: {}
+
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: wildfly-runtime
+    spec:
+      failedBuildsHistoryLimit: 5
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: 'wildfly-runtime:latest'
+      postCommit: {}
+      resources: {}
+      runPolicy: Serial
+      source:
+        contextDir: jre11
+        git:
+          ref: master
+          uri: 'https://github.com/mvilche/wildfly-s2i.git'
+        type: Git
+      strategy:
+        dockerStrategy:
+          dockerfilePath: Dockerfile
+        type: Docker
+      successfulBuildsHistoryLimit: 5
+      triggers:
+        - type: ConfigChange
+
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: wildfly-runtime
+    spec: {}
+
+######
+
+
+
+
+  parameters:
+    - name: APP_NAME
+      displayName: Nombre del microservicio
+      value: ''
+      required: true
+    - name: REPO_GIT
+      displayName: Repositorio git donde se encuentra la aplicacion
+      value: ""
+      required: true
+    - name: BRANCH_GIT
+      displayName: Nombre del branch del repositorio
+      value: ""
+      required: true
+    - name: SOURCE_SECRET
+      displayName: Nombre del secret para autenticacion con el git
+      value: ""
+    - name: MVN_OPTS
+      displayName: Argumentos adicionales maven. Valores por defecto (clean package -Dfile.encoding=UTF-8 -DskipTests=true)
+      value: ""
+    - name: NEXUS_MIRROR_URL
+      displayName: Especifique repositorio nexus para la descarga de las dependencias. Recomendado
+      value: ""
+    - name: EXTRA_REPO
+      displayName: Repositorio git adicional para compilar previo al microservicio. Ej shared
+      value: ""
+    - name: DOMINIO
+      displayName: Dominio de acceso al route
+      value: ""
+      required: true
+    - name: JAVA_OPTS
+      displayName: Parametros jvm para el inicio del microservicio
+      value: "-Dfile.encoding=UTF8 -XX:MaxRAMFraction=1 -XX:+ExitOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -Djava.net.preferIPv4Stack=true"

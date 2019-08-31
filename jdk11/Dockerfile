@@ -1,0 +1,37 @@
+FROM alpine:3.10
+
+ENV MAVEN_VERSION=3.6.1 \
+JDK_VERSION=openjdk11-jdk \
+WILDFLY_VERSION=15.0.1.Final
+
+LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
+      io.k8s.description="Compilador de aplicaciones java con maven s2i" \
+      io.k8s.display-name="Java Applications" \
+      io.openshift.tags="builder,java,maven" \
+      io.openshift.expose-services="8080,8009" \
+      org.jboss.deployments-dir="/opt/wildfly/standalone/deployments" \
+      io.openshift.s2i.scripts-url="image:///usr/libexec/s2i"
+
+RUN apk add --update --no-cache $JDK_VERSION wget bash git busybox-extras msttcorefonts-installer fontconfig  which openssh shadow busybox-suid coreutils tzdata
+RUN mkdir -p /opt/wildfly /opt/maven && rm -rf /etc/localtime && \
+wget -q http://www-eu.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
+tar xzf apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /opt/maven && rm apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
+ln -s /opt/maven/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/bin/mvn && \
+    update-ms-fonts && \
+    fc-cache -f && \
+wget https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz --progress=bar:force -O /tmp/wildfly.tar.gz && \
+tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp/wildfly.tar.gz
+COPY contrib/wfmodules/ /opt/wildfly/modules/
+COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/standalone.xml
+COPY contrib/wfcfg/standalone.conf /opt/wildfly/bin/standalone.conf
+COPY s2i/bin/ /usr/libexec/s2i
+RUN mkdir /opt/config && touch /etc/localtime /etc/timezone && adduser -D -u 1001 s2i && usermod -aG 0 s2i && \
+chown -R 1001 /opt /home/s2i /usr/libexec/s2i /etc/localtime /etc/timezone  && \
+chgrp -R 0 /opt /home/s2i /usr/libexec/s2i /etc/localtime /etc/timezone  && \
+chmod -R g=u /opt /usr/libexec/s2i /etc/localtime /etc/timezone
+WORKDIR /opt/wildfly
+ENV HOME /home/s2i
+USER 1001
+EXPOSE 8080 8009
+CMD ["/usr/libexec/s2i/usage"]
+
