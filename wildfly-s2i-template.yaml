@@ -46,8 +46,6 @@
         spec:
           containers:
             - env:
-                - name: APP_OPTIONS
-                  value: ${APP_OPTIONS}
                 - name: JAVA_OPTS
                   value: ${JAVA_OPTS}
               image: "${APP_NAME}:latest"
@@ -103,7 +101,6 @@
       strategy:
         sourceStrategy:
           incremental: true
-          forcePull: true
           env:
             - name: NEXUS_MIRROR_URL
               value: ${NEXUS_MIRROR_URL}
@@ -112,10 +109,10 @@
             - name: MVN_OPTS
               value: ${MVN_OPTS}
             - name: JAVA_OPTS
-              value: '-Dfile.encoding=UTF8 -XX:+ExitOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -Djava.net.preferIPv4Stack=true'
+              value: ${JAVA_OPTS}
           from:
             kind: ImageStreamTag
-            name: wildfly-s2i:latest
+            name: wildfly-${WILDFLY_VERSION}-s2i:latest
         type: Source
       successfulBuildsHistoryLimit: 5
       triggers:
@@ -139,8 +136,8 @@
       source:
         type: Dockerfile
         dockerfile: |-
-                FROM wildfly-runtime:latest
-                COPY deployments /opt/wildfly/standalone
+                FROM wildfly-${WILDFLY_VERSION}-runtime:latest
+                COPY deployments /opt/wildfly/standalone/deployments
         images:
         - from:
             kind: ImageStreamTag
@@ -152,7 +149,7 @@
         dockerStrategy:
           from:
             kind: ImageStreamTag
-            name: wildfly-runtime:latest
+            name: wildfly-${WILDFLY_VERSION}-runtime:latest
         type: Docker
       triggers:
       - type: "imageChange"
@@ -171,7 +168,7 @@
       name: ${APP_NAME}
     spec:
       ports:
-        - name: 8080-tcp
+        - name: http
           port: 8080
           protocol: TCP
           targetPort: 8080
@@ -179,7 +176,7 @@
           port: 8778
           protocol: TCP
           targetPort: 8778
-        - name: 8009-ajp
+        - name: ajp
           port: 8009
           protocol: TCP
           targetPort: 8009
@@ -230,20 +227,20 @@
     metadata:
       labels:
         app: ${APP_NAME}
-        build: wildfly-s2i
-      name: wildfly-s2i
+        build: wildfly-${WILDFLY_VERSION}-s2i
+      name: wildfly-${WILDFLY_VERSION}-s2i
     spec:
       failedBuildsHistoryLimit: 5
       nodeSelector: null
       output:
         to:
           kind: ImageStreamTag
-          name: 'wildfly-s2i:latest'
+          name: 'wildfly-${WILDFLY_VERSION}-s2i:latest'
       postCommit: {}
       resources: {}
       runPolicy: Serial
       source:
-        contextDir: jdk11
+        contextDir: ${WILDFLY_VERSION}/jdk${VERSION_JDK}
         git:
           ref: master
           uri: 'https://github.com/mvilche/wildfly-s2i.git'
@@ -262,7 +259,7 @@
     metadata:
       labels:
         app: ${APP_NAME}
-      name: wildfly-s2i
+      name: wildfly-${WILDFLY_VERSION}-s2i
     spec: {}
 
   - apiVersion: v1
@@ -270,19 +267,19 @@
     metadata:
       labels:
         app: ${APP_NAME}
-      name: wildfly-runtime
+      name: wildfly-${WILDFLY_VERSION}-runtime
     spec:
       failedBuildsHistoryLimit: 5
       nodeSelector: null
       output:
         to:
           kind: ImageStreamTag
-          name: 'wildfly-runtime:latest'
+          name: 'wildfly-${WILDFLY_VERSION}-runtime:latest'
       postCommit: {}
       resources: {}
       runPolicy: Serial
       source:
-        contextDir: jre11
+        contextDir: ${WILDFLY_VERSION}/jre${VERSION_JDK}
         git:
           ref: master
           uri: 'https://github.com/mvilche/wildfly-s2i.git'
@@ -300,7 +297,7 @@
     metadata:
       labels:
         app: ${APP_NAME}
-      name: wildfly-runtime
+      name: wildfly-${WILDFLY_VERSION}-runtime
     spec: {}
 
 ######
@@ -312,6 +309,14 @@
     - name: APP_NAME
       displayName: Nombre del microservicio
       value: ''
+      required: true
+    - name: WILDFLY_VERSION
+      displayName: Versión de Wildfly a utilizar
+      value: '15'
+      required: true
+    - name: VERSION_JDK
+      displayName: Versión de JDK
+      value: '11'
       required: true
     - name: REPO_GIT
       displayName: Repositorio git donde se encuentra la aplicacion
@@ -339,4 +344,4 @@
       required: true
     - name: JAVA_OPTS
       displayName: Parametros jvm para el inicio del microservicio
-      value: "-Dfile.encoding=UTF8 -XX:MaxRAMFraction=1 -XX:+ExitOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -Djava.net.preferIPv4Stack=true"
+      value: ""
