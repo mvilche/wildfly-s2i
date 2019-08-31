@@ -23,7 +23,7 @@
 
 
 
-
+### Utilizar configmap para definir un standalone.xml especifico en /opt/config/standalone.xml
 
 License
 ----
