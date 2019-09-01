@@ -23,6 +23,11 @@
 
 
 
+### Openshift Install
+
+oc apply -f wildfly-s2i-template.yaml
+
+
 ### Utilizar configmap para definir un standalone.xml especifico en /opt/config/standalone.xml
 
 License

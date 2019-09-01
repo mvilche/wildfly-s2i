@@ -43,4 +43,4 @@ fi
 	echo "INICIANDO APP..."
 	echo "···································································································"
 rm -rf /opt/wildfly/standalone/tmp /opt/wildfly/standalone/data /opt/wildfly/standalone/logs /opt/wildfly/standalone/deployments/*.deployed
-exec /opt/wildfly/bin/standalone.sh -c /opt/config/standalone.xml -b 0.0.0.0 $JAVA_OPTS
+exec /opt/wildfly/bin/standalone.sh -c custom/standalone.xml -b 0.0.0.0 $JAVA_OPTS
