@@ -22,7 +22,7 @@ ln -s /opt/maven/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/bin/mvn && \
 wget https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz --progress=bar:force -O /tmp/wildfly.tar.gz && \
 tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp/wildfly.tar.gz
 COPY contrib/wfmodules/ /opt/wildfly/modules/
-COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/standalone.xml /opt/config/standalone.xml
+COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/standalone.xml
 COPY contrib/wfcfg/standalone.xml /opt/config/standalone.xml
 COPY contrib/wfcfg/standalone.conf /opt/wildfly/bin/standalone.conf
 COPY s2i/bin/ /usr/libexec/s2i
