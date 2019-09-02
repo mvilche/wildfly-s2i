@@ -228,10 +228,28 @@
     metadata:
       labels:
         app: ${APP_NAME}
-      name: ${APP_NAME}
+      name: ${APP_NAME}-http
     spec:
       port:
         targetPort: http
+      to:
+        kind: Service
+        name: ${APP_NAME}
+        weight: 100
+      wildcardPolicy: None
+
+
+
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: ${APP_NAME}-jolokia
+    spec:
+      port:
+        targetPort: jolokia
+      path: /jolokia
       to:
         kind: Service
         name: ${APP_NAME}
