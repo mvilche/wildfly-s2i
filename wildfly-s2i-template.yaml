@@ -942,7 +942,7 @@
       value: ""
     - name: MVN_OPTS
       displayName: Argumentos adicionales maven. Valores por defecto (clean package -Dfile.encoding=UTF-8 -DskipTests=true)
-      value: ""
+      value: "-DskipTests=true"
     - name: NEXUS_MIRROR_URL
       displayName: Especifique repositorio nexus para la descarga de las dependencias. Recomendado
       value: ""
