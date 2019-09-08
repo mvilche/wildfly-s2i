@@ -1,7 +1,7 @@
 FROM alpine:3.10
 
 ENV MAVEN_VERSION=3.6.1 \
-JDK_VERSION=openjdk8-jdk \
+JDK_VERSION=openjdk8 \
 WILDFLY_VERSION=15.0.1.Final
 
 LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
