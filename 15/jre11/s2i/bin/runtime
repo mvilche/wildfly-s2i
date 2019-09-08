@@ -28,15 +28,14 @@ else
 fi
 
 
-if [ -z "$JAVA_OPTS" ]; then
+if [ -z "$CUSTOM_JAVA_OPTS" ]; then
 
 	echo "···································································································"
-	echo "VARIABLE JAVA_OPTS NO ENCONTRADA"
-	export JAVA_OPTS="-Dfile.encoding=UTF8 -XX:MaxRAMFraction=1 -XX:+ExitOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -Djava.net.preferIPv4Stack=true"
+	echo "VARIABLE CUSTOM_JAVA_OPTS NO ENCONTRADA"
 	echo "···································································································"
 else
 	echo "···································································································"
-	echo "VARIABLE JAVA_OPTS ENCONTRADA: $JAVA_OPTS"
+	echo "VARIABLE CUSTOM_JAVA_OPTS ENCONTRADA: $CUSTOM_JAVA_OPTS"
 	echo "···································································································"
 fi
 
@@ -46,4 +45,4 @@ fi
 	echo "···································································································"
 
 rm -rf /opt/wildfly/standalone/tmp /opt/wildfly/standalone/data /opt/wildfly/standalone/logs /opt/wildfly/standalone/deployments/*.deployed
-exec /opt/wildfly/bin/standalone.sh -c custom/standalone.xml -b 0.0.0.0 $JAVA_OPTS
+exec /opt/wildfly/bin/standalone.sh -c custom/standalone.xml -b 0.0.0.0 $CUSTOM_JAVA_OPTS
