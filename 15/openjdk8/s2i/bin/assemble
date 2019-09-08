@@ -28,7 +28,7 @@ if [ -d /tmp/artifacts/.m2 ]; then
   mv /tmp/artifacts/.m2 /home/s2i/
 fi
 
-echo "---> INSTALANDO CODIGO FUENTE..." 
+echo "---> INSTALANDO CODIGO FUENTE..."
 mkdir /opt/src
 cp -Rf /tmp/src/* /opt/src/
 
@@ -81,7 +81,7 @@ ERR=$?
 exit $ERR
 fi
 
-echo "COMPILADO EXTRA_REPO FINALIZADO - LIMPIANDO DIRECTORIOS.." && rm -rf /opt/extra_repo 
+echo "COMPILADO EXTRA_REPO FINALIZADO - LIMPIANDO DIRECTORIOS.." && rm -rf /opt/extra_repo
 fi
 
 echo "---> COMPILANDO CODIGO FUENTE..."
@@ -96,5 +96,13 @@ fi
 
 echo "---> COPIANDO APLICACION GENERADA AL DIRECTORIO DE DEPLOY..."
 cd /opt/src && find . -name '*.war' | xargs cp -t /opt/wildfly/standalone/deployments || find . -name '*.ear' | xargs cp -t /opt/wildfly/standalone/deployments && echo "APP INSTALADA!"
+
+war=`ls -1 /opt/wildfly/standalone/deployments/*.war 2>/dev/null | wc -l`
+ear=`ls -1 /opt/wildfly/standalone/deployments/*.ear 2>/dev/null | wc -l`
+
+if [ $war != 0 ] && [ $ear != 0 ]; then
+rm -rf /opt/wildfly/standalone/deployments/*.war
+fi
+
 ls -1 /opt/wildfly/standalone/deployments/
 cd $HOME && rm -rf /opt/src

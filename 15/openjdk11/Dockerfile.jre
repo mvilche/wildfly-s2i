@@ -1,6 +1,6 @@
 FROM alpine:3.10
 
-ENV JDK_VERSION=openjdk11-jre \
+ENV JDK_VERSION=openjdk8-jre \
 WILDFLY_VERSION=15.0.1.Final
 
 LABEL autor="Martin Vilche <mfvilche@gmail.com>" \

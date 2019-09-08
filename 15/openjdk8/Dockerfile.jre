@@ -1,6 +1,6 @@
 FROM alpine:3.10
 
-ENV JDK_VERSION=openjdk8-jre \
+ENV JDK_VERSION=openjdk11-jre \
 WILDFLY_VERSION=15.0.1.Final
 
 LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
@@ -19,7 +19,7 @@ mkdir -p /opt/wildfly /opt/config && tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfl
 COPY contrib/wfmodules/ /opt/wildfly/modules/
 COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/custom/standalone.xml
 COPY contrib/wfcfg/standalone.conf /opt/wildfly/bin/standalone.conf
-COPY s2i/bin/runtime /usr/libexec/s2i/runtime
+COPY s2i/bin/run /usr/libexec/s2i/run
 COPY contrib/jolokia-jvm-1.6.2-agent.jar /usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar
 RUN touch /etc/localtime /etc/timezone && \
 chown -R 1001 /opt /usr/libexec/s2i /etc/localtime /etc/timezone  && \
@@ -28,5 +28,5 @@ chmod -R g=u /opt /usr/libexec/s2i /etc/localtime /etc/timezone
 WORKDIR /opt/wildfly
 USER 1001
 EXPOSE 8080 8778 8009
-CMD ["/usr/libexec/s2i/runtime"]
+CMD ["/usr/libexec/s2i/run"]
 
