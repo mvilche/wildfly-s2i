@@ -7,7 +7,7 @@
 
 - Non-root
 - Openshift compatible
-- Runtime image with Jolokia Agent
+- Jolokia Agent
 
 ### Variables
 
@@ -25,10 +25,7 @@
 
 ### Openshift Install
 
-oc apply -f wildfly-s2i-template.yaml
-
-
-### Utilizar configmap para definir un standalone.xml especifico en /opt/config/standalone.xml
+oc create -f wildfly-s2i-template.yaml
 
 License
 ----

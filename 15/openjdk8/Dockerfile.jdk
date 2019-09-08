@@ -1,7 +1,7 @@
 FROM alpine:3.10
 
 ENV MAVEN_VERSION=3.6.1 \
-JDK_VERSION=openjdk11-jdk \
+JDK_VERSION=openjdk8 \
 WILDFLY_VERSION=15.0.1.Final
 
 LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
@@ -24,6 +24,7 @@ tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp
 COPY contrib/wfmodules/ /opt/wildfly/modules/
 COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/custom/standalone.xml
 COPY contrib/wfcfg/standalone.conf /opt/wildfly/bin/standalone.conf
+COPY contrib/jolokia-jvm-1.6.2-agent.jar /usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar
 COPY s2i/bin/ /usr/libexec/s2i
 RUN touch /etc/localtime /etc/timezone && adduser -D -u 1001 s2i && usermod -aG 0 s2i && \
 chown -R 1001 /opt /home/s2i /usr/libexec/s2i /etc/localtime /etc/timezone  && \
