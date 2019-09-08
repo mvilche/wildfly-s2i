@@ -7,7 +7,7 @@
 #	https://github.com/openshift/source-to-image/blob/master/docs/builder_image.md
 #
 
-export WILDFLY_DIR=$WILDFLY_DIR
+export WILDFLY_DIR=/opt/wildfly
 
 	echo "···································································································"
 	echo "MARTIN FABRIZZIO VILCHE - https://github.com/mvilche"
