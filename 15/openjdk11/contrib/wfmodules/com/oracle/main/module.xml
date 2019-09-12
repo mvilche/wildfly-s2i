@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-    
-<module name="com.oracle" xmlns="urn:jboss:module:1.1">
-    <resources>
-        <resource-root path="ojdbc7.jar"/>
-    </resources>
-    <dependencies>
-        <module name="javax.api"/>
-        <module name="javax.transaction.api"/>
-    </dependencies>
+<module xmlns="urn:jboss:module:1.1" name="com.oracle">
+<resources>
+<resource-root path="ojdbc8.jar"/>
+<!--  Insert resources here  -->
+</resources>
+<dependencies>
+<module name="javax.api"/>
+</dependencies>
 </module>
