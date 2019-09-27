@@ -485,11 +485,33 @@
                     <logger category="sun.rmi">
                         <level name="WARN"/>
                     </logger>
+                   <!-- <custom-handler name="GelfLogger" class="biz.paluch.logging.gelf.wildfly.WildFlyGelfLogHandler" module="biz.paluch.logging" enabled="true">
+                        <level name="INFO" />
+                        <properties>
+                            <property name="host" value="udp:localhost" />
+                            <property name="port" value="12201" />
+                            <property name="version" value="1.0" />
+                            <property name="facility" value="java-test" />
+                            <property name="extractStackTrace" value="true" />
+                            <property name="filterStackTrace" value="true" />
+                            <property name="includeLogMessageParameters" value="true" />
+                            <property name="includeLocation" value="true" />
+                            <property name="mdcProfiling" value="true" />
+                            <property name="timestampPattern" value="yyyy-MM-dd HH:mm:ss,SSS" />
+                            <property name="maximumMessageSize" value="8192" />
+                            <property name="additionalFields" value="fieldName1=fieldValue1,fieldName2=fieldValue2" />
+                            <property name="additionalFieldTypes" value="fieldName1=String,fieldName2=Double,fieldName3=Long" />
+                            <property name="mdcFields" value="mdcField1,mdcField2" />
+                            <property name="dynamicMdcFields" value="mdc.*,(mdc|MDC)fields" />
+                            <property name="includeFullMdc" value="true" />
+                        </properties>
+                    </custom-handler>    -->                
                     <root-logger>
                         <level name="INFO"/>
                         <handlers>
                             <handler name="CONSOLE"/>
                             <handler name="FILE"/>
+                           <!-- <handler name="GelfLogger"/> -->
                         </handlers>
                     </root-logger>
                     <formatter name="PATTERN">
