@@ -157,6 +157,10 @@
       successfulBuildsHistoryLimit: 5
       triggers:
         - type: ConfigChange
+        - imageChange:
+            from:
+              kind: "ImageStreamTag"
+              name: "wildfly-${WILDFLY_VERSION}-s2i:latest"        
 
 
 
