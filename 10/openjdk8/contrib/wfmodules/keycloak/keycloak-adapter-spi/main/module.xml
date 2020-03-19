@@ -21,8 +21,8 @@
 
 <module xmlns="urn:jboss:module:1.1" name="org.keycloak.keycloak-adapter-spi">
     <resources>
-        <resource-root path="keycloak-adapter-spi-9.0.0.jar"/>
-        <resource-root path="keycloak-undertow-adapter-spi-9.0.0.jar"/>
+        <resource-root path="keycloak-adapter-spi-4.8.3.Final.jar"/>
+        <resource-root path="keycloak-undertow-adapter-spi-4.8.3.Final.jar"/>
         <!-- Insert resources here -->
     </resources>
     <dependencies>

@@ -21,7 +21,7 @@
 
 <module xmlns="urn:jboss:module:1.1" name="org.keycloak.keycloak-saml-adapter-api-public">
     <resources>
-        <resource-root path="keycloak-saml-adapter-api-public-9.0.0.jar"/>
+        <resource-root path="keycloak-saml-adapter-api-public-4.8.3.Final.jar"/>
         <!-- Insert resources here -->
     </resources>
     <dependencies>

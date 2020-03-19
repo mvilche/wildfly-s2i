@@ -21,7 +21,7 @@
 
 <module xmlns="urn:jboss:module:1.1" name="org.keycloak.keycloak-common">
     <resources>
-        <resource-root path="keycloak-common-9.0.0.jar"/>
+        <resource-root path="keycloak-common-4.8.3.Final.jar"/>
         <!-- Insert resources here -->
     </resources>
     <dependencies>
