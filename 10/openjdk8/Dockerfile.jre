@@ -22,7 +22,7 @@ COPY contrib/wfmodules/biz /opt/wildfly/modules/system/layers/base/biz
 COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/custom/standalone.xml
 COPY contrib/wfcfg/standalone.conf /opt/wildfly/bin/standalone.conf
 COPY s2i/bin/run /usr/libexec/s2i/run
-COPY contrib/wfmodules/keycloack/org /opt/wildfly/modules/system/add-ons/keycloak/org
+COPY contrib/wfmodules/keycloak /opt/wildfly/modules/system/add-ons/keycloak/org/keycloak
 COPY contrib/jolokia-jvm-1.6.2-agent.jar /usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar
 
 RUN touch /etc/localtime /etc/timezone && \
