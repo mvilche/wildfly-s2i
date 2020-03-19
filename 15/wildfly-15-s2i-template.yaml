@@ -79,10 +79,10 @@
               resources:
                 requests:
                   cpu: 500m
-                  memory: 1Gi
+                  memory: 512Mi
                 limits:
                   cpu: 1
-                  memory: 2Gi
+                  memory: 1Gi
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               volumeMounts:
@@ -100,7 +100,7 @@
                     path: standalone.xml
                   - key: standalone.conf
                     path: standalone.conf
-                name: wildfly-config
+                name: wildfly-config-${APP_NAME}
               name: configmap-1
       test: false
       triggers:
@@ -361,7 +361,7 @@
           fi
 
           if [ "$OPENJDK" == 11 ]; then
-          JAVA_OPTS="-javaagent:/usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar=host=0.0.0.0,protocol=https,keystore=$JBOSS_HOME/jolokia.jks,keystorePassword=password -Dfile.encoding=UTF8 -XX:+ExitOnOutOfMemoryError -Djava.net.preferIPv4Stack=true"
+          JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=90.0 -javaagent:/usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar=host=0.0.0.0,protocol=https,keystore=$JBOSS_HOME/jolokia.jks,keystorePassword=password -Dfile.encoding=UTF8 -XX:+ExitOnOutOfMemoryError -Djava.net.preferIPv4Stack=true"
           JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true"
           fi
         else
@@ -936,7 +936,7 @@
         </server>
     kind: ConfigMap
     metadata:
-      name: wildfly-config
+      name: wildfly-config-${APP_NAME}
 
 ######
 
