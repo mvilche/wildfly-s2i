@@ -95,10 +95,9 @@ exit $ERR
 fi
 
 echo "---> COPIANDO APLICACION GENERADA AL DIRECTORIO DE DEPLOY..."
-find /opt/src -name '*.war' | xargs cp -t /opt/wildfly/standalone/deployments
-find /opt/src -name '*.ear' | xargs cp -t /opt/wildfly/standalone/deployments
+find /opt/src/ -iname '*.war' -exec cp {} /opt/wildfly/standalone/deployments \;
+find /opt/src/ -iname '*.ear' -exec cp {} /opt/wildfly/standalone/deployments \;
 echo "APP INSTALADA!" 
-
 war=`ls -1 /opt/wildfly/standalone/deployments/*.war 2>/dev/null | wc -l`
 ear=`ls -1 /opt/wildfly/standalone/deployments/*.ear 2>/dev/null | wc -l`
 

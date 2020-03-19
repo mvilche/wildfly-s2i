@@ -115,8 +115,6 @@ fi
 
 
 echo "---> COPIANDO APLICACION GENERADA AL DIRECTORIO DE DEPLOY..."
-#cd /opt/src && find . -name '*.war' | xargs cp -t /opt/wildfly/standalone/deployments
-#cd /opt/src && find . -name '*.ear' | xargs cp -t /opt/wildfly/standalone/deployments
 find /opt/src/ -iname '*.war' -exec cp {} /opt/wildfly/standalone/deployments \;
 find /opt/src/ -iname '*.ear' -exec cp {} /opt/wildfly/standalone/deployments \;
 echo "APP INSTALADA!" 
