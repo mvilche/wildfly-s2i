@@ -1,0 +1,38 @@
+#!/bin/bash -e
+#
+# S2I run script for the 'springboot-sti' image.
+# The run script executes the server that runs your application.
+#
+# For more information see the documentation:
+#	https://github.com/openshift/source-to-image/blob/master/docs/builder_image.md
+#
+
+export WILDFLY_DIR=/opt/wildfly
+export OPENJDK=11
+	echo "···································································································"
+	echo "MARTIN FABRIZZIO VILCHE - https://github.com/mvilche"
+	echo "···································································································"
+
+
+if [ -z "$TIMEZONE" ]; then
+	echo "···································································································"
+	echo "VARIABLE TIMEZONE NO SETEADA - INICIANDO CON VALORES POR DEFECTO"
+	echo "POSIBLES VALORES: America/Montevideo | America/El_Salvador"
+	echo "···································································································"
+else
+	echo "···································································································"
+	echo "TIMEZONE SETEADO ENCONTRADO: " $TIMEZONE
+	echo "···································································································"
+	cat /usr/share/zoneinfo/$TIMEZONE > /etc/localtime && \
+	echo $TIMEZONE > /etc/timezone
+fi
+
+	echo "···································································································"
+	echo "INICIANDO APP..."
+	echo "···································································································"
+
+
+cat $WILDFLY_DIR/standalone/configuration/custom/standalone.conf > $WILDFLY_DIR/bin/standalone.conf
+keytool -genkey -keyalg RSA -alias selfsigned -keystore $WILDFLY_DIR/jolokia.jks -storepass password -validity 360 -keysize 2048 -dname "cn=jolokia, ou=jolokia, o=jolokia, c=jolokia"
+rm -rf $WILDFLY_DIR/standalone/tmp $WILDFLY_DIR/standalone/data $WILDFLY_DIR/standalone/logs $WILDFLY_DIR/standalone/deployments/*.deployed
+exec $WILDFLY_DIR/bin/standalone.sh -c custom/standalone.xml -b 0.0.0.0
