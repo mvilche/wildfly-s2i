@@ -1,7 +1,7 @@
 FROM alpine:3.11
 
 ENV JDK_VERSION=openjdk11-jre \
-WILDFLY_VERSION=wildfly-18.0.1.Final
+WILDFLY_VERSION=https://download.jboss.org/wildfly/18.0.1.Final/wildfly-18.0.1.Final.tar.gz
 
 LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
       io.k8s.description="Runtime image jdk alpine" \
@@ -14,7 +14,7 @@ LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
 RUN apk add --update --no-cache $JDK_VERSION wget bash tzdata msttcorefonts-installer fontconfig && \
     update-ms-fonts && \
     fc-cache -f && \
-wget https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz --progress=bar:force -O /tmp/wildfly.tar.gz && \
+wget $WILDFLY_VERSION --progress=bar:force -O /tmp/wildfly.tar.gz && \
 mkdir -p /opt/wildfly /opt/config && tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp/wildfly.tar.gz
 COPY contrib/wfmodules/ /opt/wildfly/modules/
 COPY contrib/wfmodules/biz /opt/wildfly/modules/system/layers/base/biz

@@ -2,7 +2,7 @@ FROM alpine:3.11
 
 ENV MAVEN_VERSION=3.6.3 \
 JDK_VERSION=openjdk11-jdk \
-WILDFLY_VERSION=wildfly-19.0.1.Final
+WILDFLY_VERSION=https://download.jboss.org/wildfly/19.1.0.Final/wildfly-19.1.0.Final.tar.gz
 
 LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
       io.k8s.description="Compilador de aplicaciones java con maven s2i" \
@@ -20,7 +20,7 @@ ln -s /opt/maven/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/bin/mvn && \
     update-ms-fonts && \
     fc-cache -f && \
 
-wget https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz --progress=bar:force -O /tmp/wildfly.tar.gz && \
+wget $WILDFLY_VERSION --progress=bar:force -O /tmp/wildfly.tar.gz && \
 tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp/wildfly.tar.gz
 COPY contrib/wfmodules/ /opt/wildfly/modules/
 COPY contrib/wfmodules/biz /opt/wildfly/modules/system/layers/base/biz
