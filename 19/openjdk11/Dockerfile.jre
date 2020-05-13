@@ -30,4 +30,3 @@ WORKDIR /opt/wildfly
 USER 1001
 EXPOSE 8080 8778 8009 8443
 CMD ["/usr/libexec/s2i/run"]
-
