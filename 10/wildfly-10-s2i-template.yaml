@@ -808,7 +808,7 @@
         </server>
     kind: ConfigMap
     metadata:
-      name: wildfly-standalone-${APP_NAME}
+      name: ${APP_NAME}-config
 
 ######
 

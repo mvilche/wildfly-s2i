@@ -355,15 +355,8 @@
         fi
         if [ "x$JAVA_OPTS" = "x" ]; then
 
-          if [ "$OPENJDK" == 8 ]; then
-          JAVA_OPTS="-XX:MaxRAMFraction=1 -XX:+UnlockExperimentalVMOptions -javaagent:/usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar=host=0.0.0.0,protocol=https,keystore=$JBOSS_HOME/jolokia.jks,keystorePassword=password -Dfile.encoding=UTF8 -XX:+ExitOnOutOfMemoryError -Djava.net.preferIPv4Stack=true"
+          JAVA_OPTS="-javaagent:/usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar=host=0.0.0.0,protocol=https,keystore=$JBOSS_HOME/jolokia.jks,keystorePassword=password -XX:+UseContainerSupport -XX:MaxRAMPercentage=90.0 -Dfile.encoding=UTF8 -XX:+ExitOnOutOfMemoryError -Djava.net.preferIPv4Stack=true"
           JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true"
-          fi
-
-          if [ "$OPENJDK" == 11 ]; then
-          JAVA_OPTS="-javaagent:/usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar=host=0.0.0.0,protocol=https,keystore=$JBOSS_HOME/jolokia.jks,keystorePassword=password -Dfile.encoding=UTF8 -XX:+ExitOnOutOfMemoryError -Djava.net.preferIPv4Stack=true"
-          JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true"
-          fi
         else
           echo "JAVA_OPTS already set in environment; overriding default settings with values: $JAVA_OPTS"
         fi
@@ -936,7 +929,7 @@
         </server>
     kind: ConfigMap
     metadata:
-      name: wildfly-config
+      name: ${APP_NAME}-config
 
 ######
 

@@ -982,7 +982,7 @@
         </server>
     kind: ConfigMap
     metadata:
-      name: wildfly-config
+      name: ${APP_NAME}-config
 
 ######
 
