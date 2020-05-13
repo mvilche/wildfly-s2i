@@ -2,12 +2,12 @@
   apiVersion: v1
   kind: Template
   metadata:
-    name: wildlfy-s2i-mvilche
+    name: wildlfy19-s2i-mvilche
     labels:
       template: wildlfy-s2i-mvilche
       autor: "Martin_Fabrizzio_Vilche"
     annotations:
-      openshift.io/display-name: "wildlfy-s2i-mvilche"
+      openshift.io/display-name: "wildlfy19-s2i-mvilche"
       iconClass: "icon-wildfly"
       description: >-
         Wildfly s2i images + openjdk + Maven + jolokia
@@ -15,7 +15,6 @@
       openshift.io/documentation-url: "https://github.com/mvilche/wildfly-s2i.git"
       openshift.io/support-url: "https://github.com/mvilche/wildfly-s2i.git"
   message: >-
-    Eliga la version de Wildfly y Openjdk que desea utilizar
     La conexion a la base de datos podra ser realizada en el standalone.xml disponible en los configmaps
 
   objects:
