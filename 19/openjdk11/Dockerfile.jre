@@ -22,6 +22,7 @@ COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/custom/s
 COPY contrib/wfcfg/standalone.conf /opt/wildfly/bin/standalone.conf
 COPY s2i/bin/run /usr/libexec/s2i/run
 COPY contrib/jolokia-jvm-1.6.2-agent.jar /usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar
+COPY contrib/jacocoagent.jar /usr/libexec/s2i/jacocoagent.jar
 RUN touch /etc/localtime /etc/timezone && \
 chown -R 1001 /opt /usr/libexec/s2i /etc/localtime /etc/timezone  && \
 chgrp -R 0 /opt /usr/libexec/s2i /etc/localtime /etc/timezone  && \

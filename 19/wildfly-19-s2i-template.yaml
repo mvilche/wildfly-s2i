@@ -401,9 +401,16 @@
         if [ "x$JAVA_OPTS" = "x" ]; then
           JAVA_OPTS="-javaagent:/usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar=host=0.0.0.0,protocol=https,keystore=$JBOSS_HOME/jolokia.jks,keystorePassword=password -XX:+UseContainerSupport -XX:MaxRAMPercentage=90.0 -Dfile.encoding=UTF8 -XX:+ExitOnOutOfMemoryError -Djava.net.preferIPv4Stack=true"
           JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true"
+
+        if [ "JACOCO_AGENT_ENABLE" = "1" ]; then
+        JAVA_OPTS="$JAVA_OPTS -javaagent:/usr/libexec/s2i/jacocoagent.jar=destfile=/opt/wildfly/welcome-content/jacoco,includes=com.*"
+        fi
+
         else
           echo "JAVA_OPTS already set in environment; overriding default settings with values: $JAVA_OPTS"
         fi
+
+
 
         # Sample JPDA settings for remote socket debugging
         #JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n"
