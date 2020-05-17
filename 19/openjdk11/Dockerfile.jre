@@ -1,7 +1,7 @@
 FROM alpine:3.11
 
 ENV JDK_VERSION=openjdk11-jre \
-WILDFLY_VERSION=https://download.jboss.org/wildfly/18.0.1.Final/wildfly-18.0.1.Final.tar.gz
+WILDFLY_VERSION=https://download.jboss.org/wildfly/19.1.0.Final/wildfly-19.1.0.Final.tar.gz
 
 LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
       io.k8s.description="Runtime image jdk alpine" \
