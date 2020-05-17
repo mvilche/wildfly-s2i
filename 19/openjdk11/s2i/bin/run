@@ -31,6 +31,11 @@ fi
 	echo "INICIANDO APP..."
 	echo "···································································································"
 
+if [ "$JACOCO_AGENT_ENABLE" == 1 ]; then
+	echo "···································································································"
+	echo "JACOCO AGENT ENABLE"
+	echo "···································································································"
+fi
 
 cat $WILDFLY_DIR/standalone/configuration/custom/standalone.conf > $WILDFLY_DIR/bin/standalone.conf
 keytool -genkey -keyalg RSA -alias selfsigned -keystore $WILDFLY_DIR/jolokia.jks -storepass password -validity 360 -keysize 2048 -dname "cn=jolokia, ou=jolokia, o=jolokia, c=jolokia"
