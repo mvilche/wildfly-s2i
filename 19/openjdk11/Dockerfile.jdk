@@ -19,15 +19,17 @@ tar xzf apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /opt/maven && rm apache-mave
 ln -s /opt/maven/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/bin/mvn && \
     update-ms-fonts && \
     fc-cache -f && \
-
 wget $WILDFLY_VERSION --progress=bar:force -O /tmp/wildfly.tar.gz && \
 tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp/wildfly.tar.gz
 COPY contrib/wfmodules/ /opt/wildfly/modules/
 COPY contrib/wfmodules/biz /opt/wildfly/modules/system/layers/base/biz
 COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/custom/standalone.xml
+COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/standalone.xml
 COPY contrib/wfcfg/standalone.conf /opt/wildfly/bin/standalone.conf
+COPY contrib/wfcfg/standalone.conf /opt/wildfly/standalone/configuration/custom/standalone.conf
 COPY contrib/jolokia-jvm-1.6.2-agent.jar /usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar
 COPY contrib/jacocoagent.jar /usr/libexec/s2i/jacocoagent.jar
+COPY contrib/wfmodules/keycloak /opt/wildfly/modules/system/add-ons/keycloak/org/keycloak
 COPY s2i/bin/ /usr/libexec/s2i
 RUN touch /etc/localtime /etc/timezone && adduser -D -u 1001 s2i && usermod -aG 0 s2i && \
 chown -R 1001 /opt /home/s2i /usr/libexec/s2i /etc/localtime /etc/timezone  && \
