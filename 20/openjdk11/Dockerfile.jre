@@ -1,0 +1,36 @@
+FROM alpine:3.11
+
+ENV JDK_VERSION=openjdk11-jre \
+WILDFLY_VERSION=https://download.jboss.org/wildfly/20.0.0.Final/wildfly-20.0.0.Final.tar.gz
+
+LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
+      io.k8s.description="Runtime image jdk alpine" \
+      io.k8s.display-name="Java Applications" \
+      io.openshift.tags="builder,java,maven,runtime" \
+      io.openshift.expose-services="8080,8009,8778,8443" \
+      io.openshift.s2i.scripts-url="image:///usr/libexec/s2i" \
+      org.jboss.deployments-dir="/opt/wildfly/standalone/deployments"
+
+RUN apk add --update --no-cache $JDK_VERSION wget tzdata bash tzdata msttcorefonts-installer fontconfig && \
+    update-ms-fonts && \
+    fc-cache -f && \
+wget $WILDFLY_VERSION --progress=bar:force -O /tmp/wildfly.tar.gz && \
+mkdir -p /opt/wildfly /opt/config && tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp/wildfly.tar.gz
+COPY contrib/wfmodules/ /opt/wildfly/modules/
+COPY contrib/wfmodules/biz /opt/wildfly/modules/system/layers/base/biz
+COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/custom/standalone.xml
+COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/standalone.xml
+COPY contrib/wfcfg/standalone.conf /opt/wildfly/bin/standalone.conf
+COPY contrib/wfcfg/standalone.conf /opt/wildfly/standalone/configuration/custom/standalone.conf 
+COPY s2i/bin/run /usr/libexec/s2i/run
+COPY contrib/jolokia-jvm-1.6.2-agent.jar /usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar
+COPY contrib/jacocoagent.jar /usr/libexec/s2i/jacocoagent.jar
+COPY contrib/wfmodules/keycloak /opt/wildfly/modules/system/add-ons/keycloak/org/keycloak
+RUN touch /etc/localtime /etc/timezone && \
+chown -R 1001 /opt /usr/libexec/s2i /etc/localtime /etc/timezone  && \
+chgrp -R 0 /opt /usr/libexec/s2i /etc/localtime /etc/timezone  && \
+chmod -R g=u /opt /usr/libexec/s2i /etc/localtime /etc/timezone
+WORKDIR /opt/wildfly
+USER 1001
+EXPOSE 8080 8778 8009 8443
+CMD ["/usr/libexec/s2i/run"]
