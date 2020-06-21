@@ -2,12 +2,12 @@
   apiVersion: v1
   kind: Template
   metadata:
-    name: wildlfy19-s2i-mvilche
+    name: wildlfy19-s2i-mvilche-qa
     labels:
-      template: wildlfy-s2i-mvilche
+      template: wildlfy19-s2i-mvilche-qa
       autor: "Martin_Fabrizzio_Vilche"
     annotations:
-      openshift.io/display-name: "wildlfy19-s2i-mvilche"
+      openshift.io/display-name: "wildlfy19-s2i-mvilche-qa"
       iconClass: "icon-wildfly"
       description: >-
         Wildfly s2i images + openjdk + Maven + jolokia
@@ -57,6 +57,9 @@
                 - containerPort: 8778
                   protocolo: TCP
                   name: jolokia
+                - containerPort: 8443
+                  protocolo: TCP
+                  name: https
               livenessProbe:
                 failureThreshold: 3
                 initialDelaySeconds: 60
@@ -99,7 +102,7 @@
                     path: standalone.xml
                   - key: standalone.conf
                     path: standalone.conf
-                name: wildfly-config
+                name: ${APP_NAME}-config
               name: configmap-1
       test: false
       triggers:
@@ -111,98 +114,7 @@
             from:
               kind: ImageStreamTag
               name: "${APP_NAME}:latest"
-          type: ImageChange
-
-  - apiVersion: v1
-    kind: BuildConfig
-    metadata:
-      labels:
-        app: ${APP_NAME}
-      name: ${APP_NAME}-s2i
-    spec:
-      completionDeadlineSeconds: 1800
-      failedBuildsHistoryLimit: 5
-      nodeSelector: null
-      output:
-        to:
-          kind: ImageStreamTag
-          name: ${APP_NAME}-s2i:latest
-      postCommit: {}
-      resources: {}
-      runPolicy: Serial
-      source:
-        git:
-          uri: ${REPO_GIT}
-          ref: ${BRANCH_GIT}
-        type: Git
-      strategy:
-        sourceStrategy:
-          incremental: true
-          env:
-            - name: NEXUS_MIRROR_URL
-              value: ${NEXUS_MIRROR_URL}
-            - name: EXTRA_REPO
-              value: ${EXTRA_REPO}
-            - name: MVN_OPTS
-              value: ${MVN_OPTS}
-            - name: JAVA_OPTS
-              value: ${JAVA_OPTS}
-          from:
-            kind: ImageStreamTag
-            name: wildfly-${WILDFLY_VERSION}-s2i:latest
-        type: Source
-      successfulBuildsHistoryLimit: 5
-      triggers:
-        - type: ConfigChange
-        - imageChange:
-            from:
-              kind: "ImageStreamTag"
-              name: "wildfly-${WILDFLY_VERSION}-s2i:latest"        
-
-
-
-
-  - apiVersion: v1
-    kind: BuildConfig
-    metadata:
-      labels:
-        app: ${APP_NAME}
-      name: ${APP_NAME}-runtime
-    spec:
-      completionDeadlineSeconds: 1800
-      output:
-        to:
-          kind: ImageStreamTag
-          name: ${APP_NAME}:latest
-      source:
-        type: Dockerfile
-        dockerfile: |-
-                FROM wildfly-${WILDFLY_VERSION}-runtime:latest
-                COPY deployments /opt/wildfly/standalone/deployments
-                USER root
-                RUN chown 1001:0 -R /opt/wildfly/standalone/deployments
-                USER 1001
-        images:
-        - from:
-            kind: ImageStreamTag
-            name: ${APP_NAME}-s2i:latest
-          paths:
-          - sourcePath: /opt/wildfly/standalone/deployments
-            destinationDir: "."
-      strategy:
-        dockerStrategy:
-          from:
-            kind: ImageStreamTag
-            name: wildfly-${WILDFLY_VERSION}-runtime:latest
-        type: Docker
-      triggers:
-      - type: "imageChange"
-        imageChange:
-          from:
-            kind: "ImageStreamTag"
-            name: "${APP_NAME}-s2i:latest"
-
-
+          type: ImageChange    
 
   - apiVersion: v1
     kind: Service
@@ -224,6 +136,10 @@
           port: 8009
           protocol: TCP
           targetPort: 8009
+        - name: https
+          port: 8443
+          protocol: TCP
+          targetPort: 8443
       selector:
         app: ${APP_NAME}
         deploymentconfig: ${APP_NAME}
@@ -254,95 +170,6 @@
         app: ${APP_NAME}
       name: ${APP_NAME}
     spec: {}
-
-  - apiVersion: v1
-    kind: ImageStream
-    metadata:
-      labels:
-        app: ${APP_NAME}
-      name: ${APP_NAME}-s2i
-    spec: {}
-
-
-######
-  - apiVersion: v1
-    kind: BuildConfig
-    metadata:
-      labels:
-        app: ${APP_NAME}
-        build: wildfly-${WILDFLY_VERSION}-s2i
-      name: wildfly-${WILDFLY_VERSION}-s2i
-    spec:
-      failedBuildsHistoryLimit: 5
-      nodeSelector: null
-      output:
-        to:
-          kind: ImageStreamTag
-          name: 'wildfly-${WILDFLY_VERSION}-s2i:latest'
-      postCommit: {}
-      resources: {}
-      runPolicy: Serial
-      source:
-        contextDir: ${WILDFLY_VERSION}/openjdk${VERSION_JDK}
-        git:
-          ref: master
-          uri: 'https://github.com/mvilche/wildfly-s2i.git'
-        type: Git
-      strategy:
-        dockerStrategy:
-          dockerfilePath: Dockerfile.jdk
-        type: Docker
-      successfulBuildsHistoryLimit: 5
-      triggers:
-        - type: ConfigChange
-
-
-  - apiVersion: v1
-    kind: ImageStream
-    metadata:
-      labels:
-        app: ${APP_NAME}
-      name: wildfly-${WILDFLY_VERSION}-s2i
-    spec: {}
-
-  - apiVersion: v1
-    kind: BuildConfig
-    metadata:
-      labels:
-        app: ${APP_NAME}
-      name: wildfly-${WILDFLY_VERSION}-runtime
-    spec:
-      failedBuildsHistoryLimit: 5
-      nodeSelector: null
-      output:
-        to:
-          kind: ImageStreamTag
-          name: 'wildfly-${WILDFLY_VERSION}-runtime:latest'
-      postCommit: {}
-      resources: {}
-      runPolicy: Serial
-      source:
-        contextDir: ${WILDFLY_VERSION}/openjdk${VERSION_JDK}
-        git:
-          ref: master
-          uri: 'https://github.com/mvilche/wildfly-s2i.git'
-        type: Git
-      strategy:
-        dockerStrategy:
-          dockerfilePath: Dockerfile.jre
-        type: Docker
-      successfulBuildsHistoryLimit: 5
-      triggers:
-        - type: ConfigChange
-
-  - apiVersion: v1
-    kind: ImageStream
-    metadata:
-      labels:
-        app: ${APP_NAME}
-      name: wildfly-${WILDFLY_VERSION}-runtime
-    spec: {}
-
 
   - apiVersion: v1
     data:
@@ -443,7 +270,7 @@
       standalone.xml: |-
         <?xml version='1.0' encoding='UTF-8'?>
 
-        <server xmlns="urn:jboss:domain:13.0">
+        <server xmlns="urn:jboss:domain:12.0">
             <extensions>
                 <extension module="org.jboss.as.clustering.infinispan"/>
                 <extension module="org.jboss.as.connector"/>
@@ -565,33 +392,11 @@
                     <logger category="sun.rmi">
                         <level name="WARN"/>
                     </logger>
-                <!-- <custom-handler name="GelfLogger" class="biz.paluch.logging.gelf.wildfly.WildFlyGelfLogHandler" module="biz.paluch.logging" enabled="true">
-                      <level name="INFO" />
-                      <properties>
-                    <property name="host" value="udp:localhost" />
-                    <property name="port" value="12201" />
-                    <property name="version" value="1.0" />
-                    <property name="facility" value="logstash-gelf" />
-                    <property name="extractStackTrace" value="true" />
-                    <property name="filterStackTrace" value="true" />
-                    <property name="includeLogMessageParameters" value="true" />
-                    <property name="includeLocation" value="true" />
-                    <property name="mdcProfiling" value="true" />
-                    <property name="timestampPattern" value="yyyy-MM-dd HH:mm:ss,SSS" />
-                    <property name="maximumMessageSize" value="8192" />
-                    <property name="additionalFields" value="fieldName1=fieldValue1,fieldName2=fieldValue2" />
-                    <property name="additionalFieldTypes" value="fieldName1=String,fieldName2=Double,fieldName3=Long" />
-                    <property name="mdcFields" value="mdcField1,mdcField2" />
-                    <property name="dynamicMdcFields" value="mdc.*,(mdc|MDC)fields" />
-                    <property name="includeFullMdc" value="true" />
-                      </properties>
-                      </custom-handler> -->            
                     <root-logger>
                         <level name="INFO"/>
                         <handlers>
                             <handler name="CONSOLE"/>
                             <handler name="FILE"/>
-                          <!-- <handler name="GelfLogger"/> -->
                         </handlers>
                     </root-logger>
                     <formatter name="PATTERN">
@@ -614,38 +419,41 @@
                 </subsystem>
                 <subsystem xmlns="urn:jboss:domain:bean-validation:1.0"/>
                 <subsystem xmlns="urn:jboss:domain:core-management:1.0"/>
-                <subsystem xmlns="urn:jboss:domain:datasources:6.0">
-                <datasources>
-              <!-- <datasource jndi-name="java:jboss/datasources/${env.OPENSHIFT_POSTGRESQL_DATASOURCE}" enabled="${postgresql.enabled}" use-java-context="true" pool-name="${env.OPENSHIFT_POSTGRESQL_DATASOURCE}" use-ccm="true">
-                    <connection-url>jdbc:postgresql://${env.OPENSHIFT_POSTGRESQL_DB_HOST}:${env.OPENSHIFT_POSTGRESQL_DB_PORT}/${env.OPENSHIFT_POSTGRESQL_DB_NAME}</connection-url>
-                    <driver>postgresql</driver>
-                    <security>
-                      <user-name>${env.OPENSHIFT_POSTGRESQL_DB_USERNAME}</user-name>
-                      <password>${env.OPENSHIFT_POSTGRESQL_DB_PASSWORD}</password>
-                    </security>
-                    <validation>
-                        <check-valid-connection-sql>SELECT 1</check-valid-connection-sql>
-                        <background-validation>true</background-validation>
-                        <background-validation-millis>60000</background-validation-millis>
-                        <validate-on-match>true</validate-on-match>
-                    </validation>
-                    <pool>
-                        <flush-strategy>IdleConnections</flush-strategy>
-                    </pool>
-          </datasource> -->
-                <drivers>
-                    <driver name="mysql" module="com.mysql.jdbc">
-                        <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
-                    </driver>
-                    <driver name="postgresql" module="org.postgresql.jdbc">
-                        <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
-          </driver>
-                    <driver name="oracle" module="com.oracle">
-                  <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
-              <xa-datasource-class>oracle.jdbc.xa.client.OracleXADataSource</xa-datasource-class>
-          </driver>
-                </drivers>
-              </datasources>
+                <subsystem xmlns="urn:jboss:domain:datasources:5.0">
+                        </datasource>
+                      <!-- <datasource jndi-name="java:jboss/datasources/${env.OPENSHIFT_POSTGRESQL_DATASOURCE}" enabled="${postgresql.enabled}" use-java-context="true" pool-name="${env.OPENSHIFT_POSTGRESQL_DATASOURCE}" use-ccm="true">
+                            <connection-url>jdbc:postgresql://${env.OPENSHIFT_POSTGRESQL_DB_HOST}:${env.OPENSHIFT_POSTGRESQL_DB_PORT}/${env.OPENSHIFT_POSTGRESQL_DB_NAME}</connection-url>
+                            <driver>postgresql</driver>
+                            <security>
+                              <user-name>${env.OPENSHIFT_POSTGRESQL_DB_USERNAME}</user-name>
+                              <password>${env.OPENSHIFT_POSTGRESQL_DB_PASSWORD}</password>
+                            </security>
+                            <validation>
+                                <check-valid-connection-sql>SELECT 1</check-valid-connection-sql>
+                                <background-validation>true</background-validation>
+                                <background-validation-millis>60000</background-validation-millis>
+                                <validate-on-match>true</validate-on-match>
+                            </validation>
+                            <pool>
+                                <flush-strategy>IdleConnections</flush-strategy>
+                            </pool>
+              </datasource> -->
+                        <drivers>
+                            <driver name="h2" module="com.h2database.h2">
+                                <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
+                            </driver>
+                            <driver name="mysql" module="com.mysql.jdbc">
+                                <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
+                            </driver>
+                            <driver name="postgresql" module="org.postgresql.jdbc">
+                                <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+            </driver>
+                            <driver name="oracle" module="com.oracle">
+                          <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+                    <xa-datasource-class>oracle.jdbc.xa.client.OracleXADataSource</xa-datasource-class>
+            </driver>
+                        </drivers>
+                    </datasources>
                 </subsystem>
                 <subsystem xmlns="urn:jboss:domain:deployment-scanner:2.0">
                     <deployment-scanner path="deployments" relative-to="jboss.server.base.dir" scan-interval="5000" runtime-failure-causes-rollback="${jboss.deployment.scanner.rollback.on.failure:false}"/>
@@ -676,7 +484,7 @@
                     </concurrent>
                 </subsystem>
                 <subsystem xmlns="urn:jboss:domain:ee-security:1.0"/>
-                <subsystem xmlns="urn:jboss:domain:ejb3:7.0">
+                <subsystem xmlns="urn:jboss:domain:ejb3:6.0">
                     <session-bean>
                         <stateless>
                             <bean-instance-pool-ref pool-name="slsb-strict-max-pool"/>
@@ -719,7 +527,7 @@
                     <statistics enabled="${wildfly.ejb3.statistics-enabled:${wildfly.statistics-enabled:false}}"/>
                     <log-system-exceptions value="true"/>
                 </subsystem>
-                <subsystem xmlns="urn:wildfly:elytron:10.0" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
+                <subsystem xmlns="urn:wildfly:elytron:9.0" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
                     <providers>
                         <aggregate-providers name="combined-providers">
                             <providers name="elytron"/>
@@ -819,7 +627,7 @@
                         <provider-sasl-server-factory name="global"/>
                     </sasl>
                 </subsystem>
-                <subsystem xmlns="urn:jboss:domain:infinispan:10.0">
+                <subsystem xmlns="urn:jboss:domain:infinispan:9.0">
                     <cache-container name="web" default-cache="passivation" module="org.wildfly.clustering.web.infinispan">
                         <local-cache name="passivation">
                             <file-store passivation="true" purge="false"/>
@@ -881,7 +689,7 @@
                     <jpa default-datasource="" default-extended-persistence-inheritance="DEEP"/>
                 </subsystem>
                 <subsystem xmlns="urn:jboss:domain:jsf:1.1"/>
-                <subsystem xmlns="urn:jboss:domain:mail:4.0">
+                <subsystem xmlns="urn:jboss:domain:mail:3.0">
                     <mail-session name="default" jndi-name="java:jboss/mail/Default">
                         <smtp-server outbound-socket-binding-ref="mail-smtp"/>
                     </mail-session>
@@ -903,7 +711,7 @@
                     <http-connector name="http-remoting-connector" connector-ref="default" security-realm="ApplicationRealm"/>
                 </subsystem>
                 <subsystem xmlns="urn:jboss:domain:request-controller:1.0"/>
-                <subsystem xmlns="urn:jboss:domain:resource-adapters:6.0"/>
+                <subsystem xmlns="urn:jboss:domain:resource-adapters:5.0"/>
                 <subsystem xmlns="urn:jboss:domain:sar:1.0"/>
                 <subsystem xmlns="urn:jboss:domain:security:2.0">
                     <security-domains>
@@ -954,7 +762,7 @@
                     <coordinator-environment statistics-enabled="${wildfly.transactions.statistics-enabled:${wildfly.statistics-enabled:false}}"/>
                     <object-store path="tx-object-store" relative-to="jboss.server.data.dir"/>
                 </subsystem>
-                <subsystem xmlns="urn:jboss:domain:undertow:11.0" default-server="default-server" default-virtual-host="default-host" default-servlet-container="default" default-security-domain="other" statistics-enabled="${wildfly.undertow.statistics-enabled:${wildfly.statistics-enabled:false}}">
+                <subsystem xmlns="urn:jboss:domain:undertow:10.0" default-server="default-server" default-virtual-host="default-host" default-servlet-container="default" default-security-domain="other" statistics-enabled="${wildfly.undertow.statistics-enabled:${wildfly.statistics-enabled:false}}">
                     <buffer-cache name="default"/>
                     <server name="default-server">
                         <http-listener name="default" socket-binding="http" redirect-socket="https" enable-http2="true"/>
@@ -1017,25 +825,3 @@
       displayName: Nombre del microservicio
       value: ''
       required: true
-    - name: WILDFLY_VERSION
-      displayName: Versión de Wildfly a utilizar
-      value: '20'
-      required: true
-    - name: VERSION_JDK
-      displayName: Versión de OPENJDK
-      value: '11'
-      required: true
-    - name: REPO_GIT
-      displayName: Repositorio git donde se encuentra la aplicacion
-      value: ""
-      required: true
-    - name: BRANCH_GIT
-      displayName: Nombre del branch del repositorio
-      value: ""
-      required: true
-    - name: MVN_OPTS
-      displayName: Argumentos adicionales maven. Valores por defecto (clean package -Dfile.encoding=UTF-8 -DskipTests=true)
-      value: "-DskipTests=true"
-    - name: NEXUS_MIRROR_URL
-      displayName: Especifique repositorio nexus para la descarga de las dependencias. Recomendado
-      value: ""
