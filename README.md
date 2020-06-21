@@ -1,6 +1,9 @@
 # Wildfly s2i images 
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
+![Docker Stars](https://img.shields.io/docker/stars/mvilche/wildfly-s2i.svg)
+![Docker Pulls](https://img.shields.io/docker/pulls/mvilche/wildfly-s2i.svg)
+![Docker Automated](https://img.shields.io/docker/cloud/automated/mvilche/wildfly-s2i)
+![Docker Build](https://img.shields.io/docker/cloud/build/mvilche/wildfly-s2i)
 
 
 # Funcionalidades:
@@ -8,6 +11,7 @@
 - Non-root
 - Openshift compatible
 - Jolokia Agent
+- Maven
 
 ### Variables
 
@@ -23,9 +27,9 @@
 
 
 
-### Openshift Install
+### Openshift Install example
 
-oc create -f wildfly-s2i-template.yaml
+oc create -f 20/wildfly-20-s2i-template.yaml
 
 License
 ----
