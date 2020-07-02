@@ -99,7 +99,7 @@
                     path: standalone.xml
                   - key: standalone.conf
                     path: standalone.conf
-                name: wildfly-config
+                name: wildfly-${APP_NAME}
               name: configmap-1
       test: false
       triggers:
