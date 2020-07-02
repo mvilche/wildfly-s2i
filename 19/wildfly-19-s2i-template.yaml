@@ -99,7 +99,7 @@
                     path: standalone.xml
                   - key: standalone.conf
                     path: standalone.conf
-                name: wildfly-config
+                name: ${APP_NAME}-config
               name: configmap-1
       test: false
       triggers:
@@ -141,12 +141,8 @@
           env:
             - name: NEXUS_MIRROR_URL
               value: ${NEXUS_MIRROR_URL}
-            - name: EXTRA_REPO
-              value: ${EXTRA_REPO}
             - name: MVN_OPTS
               value: ${MVN_OPTS}
-            - name: JAVA_OPTS
-              value: ${JAVA_OPTS}
           from:
             kind: ImageStreamTag
             name: wildfly-${WILDFLY_VERSION}-s2i:latest
