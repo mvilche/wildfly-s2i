@@ -57,6 +57,9 @@
                 - containerPort: 8778
                   protocolo: TCP
                   name: jolokia
+                - containerPort: 8443
+                  protocolo: TCP
+                  name: https
               livenessProbe:
                 failureThreshold: 3
                 initialDelaySeconds: 60
@@ -220,6 +223,10 @@
           port: 8009
           protocol: TCP
           targetPort: 8009
+        - name: https
+          port: 8443
+          protocol: TCP
+          targetPort: 8443
       selector:
         app: ${APP_NAME}
         deploymentconfig: ${APP_NAME}
