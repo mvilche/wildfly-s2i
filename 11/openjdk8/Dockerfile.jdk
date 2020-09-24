@@ -24,7 +24,7 @@ wget $WILDFLY_VERSION --progress=bar:force -O /tmp/wildfly.tar.gz && \
 tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp/wildfly.tar.gz
 COPY contrib/wfmodules/ /opt/wildfly/modules/
 COPY contrib/wfmodules/biz /opt/wildfly/modules/system/layers/base/biz
-COPY contrib/wfmodules/commons /opt/wildfly/modules/system/layers/base/apache/commons
+COPY contrib/wfmodules/fileupload /opt/wildfly/modules/system/layers/base/org/apache/commons/fileupload
 COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/custom/standalone.xml
 COPY contrib/wfcfg/standalone.conf /opt/wildfly/standalone/configuration/custom/standalone.conf
 COPY contrib/wfcfg/standalone.conf /opt/wildfly/bin/standalone.conf
