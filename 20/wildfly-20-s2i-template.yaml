@@ -638,7 +638,8 @@
           </datasource> -->
                 <drivers>
                     <driver name="mysql" module="com.mysql.jdbc">
-                        <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
+                     <driver-class>com.mysql.cj.jdbc.Driver</driver-class>
+                     <xa-datasource-class>com.mysql.cj.jdbc.MysqlXADataSource</xa-datasource-class>
                     </driver>
                     <driver name="postgresql" module="org.postgresql.jdbc">
                         <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
