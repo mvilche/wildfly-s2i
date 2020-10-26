@@ -9,9 +9,6 @@
 
 export WILDFLY_DIR=/opt/wildfly
 export OPENJDK=11
-	echo "···································································································"
-	echo "MARTIN FABRIZZIO VILCHE - https://github.com/mvilche"
-	echo "···································································································"
 
 
 if [ -z "$TIMEZONE" ]; then
