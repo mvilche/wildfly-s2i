@@ -178,8 +178,10 @@
         dockerfile: |-
                 FROM wildfly-${WILDFLY_VERSION}-runtime:latest
                 COPY deployments /opt/wildfly/standalone/deployments
+                COPY welcome-content /opt/wildfly/welcome-content
                 USER root
-                RUN chown 1001:0 -R /opt/wildfly/standalone/deployments
+                RUN chown 1001:0 -R /opt/wildfly && \
+                chmod -R g=u /opt/wildfly
                 USER 1001
         images:
         - from:
@@ -187,6 +189,8 @@
             name: ${APP_NAME}-s2i:latest
           paths:
           - sourcePath: /opt/wildfly/standalone/deployments
+            destinationDir: "."
+          - sourcePath: /opt/wildfly/welcome-content
             destinationDir: "."
       strategy:
         dockerStrategy:

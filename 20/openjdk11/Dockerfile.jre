@@ -1,4 +1,4 @@
-FROM alpine:3.11
+FROM alpine:3.12
 
 ENV JDK_VERSION=openjdk11-jre \
 WILDFLY_VERSION=https://download.jboss.org/wildfly/20.0.0.Final/wildfly-20.0.0.Final.tar.gz

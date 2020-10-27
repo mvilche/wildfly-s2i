@@ -12,6 +12,7 @@
 - Openshift compatible
 - Jolokia Agent
 - Maven
+- Mkdocs integration
 
 ### Variables
 
@@ -24,6 +25,8 @@
 | EXTRA_REPO | Define url repositorio git extra compila previo |
 | TAG_VERSION | Variable usada en el proceso de build para definir la version |
 | MVN_OPTS | Variable usada argumentos adicionales maven |
+| MKDOCS_DIR | Directorio donde se encuentra mkdocs.yml - Ejemplo: documentation |
+| MKDOCS_CONTEXT_PATH | Nombre del context path donde instalará la documentación. Por defecto es / - Ejemplo: documentation |
 
 
 
