@@ -1,4 +1,4 @@
-FROM alpine:3.10
+FROM alpine:3.12
 
 ENV JDK_VERSION=openjdk11-jre \
 WILDFLY_VERSION=15.0.1.Final
