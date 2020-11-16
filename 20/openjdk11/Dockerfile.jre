@@ -21,7 +21,8 @@ COPY contrib/wfmodules/biz /opt/wildfly/modules/system/layers/base/biz
 COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/custom/standalone.xml
 COPY contrib/wfcfg/standalone.xml /opt/wildfly/standalone/configuration/standalone.xml
 COPY contrib/wfcfg/standalone.conf /opt/wildfly/bin/standalone.conf
-COPY contrib/wfcfg/standalone.conf /opt/wildfly/standalone/configuration/standalone.conf 
+COPY contrib/wfcfg/standalone.conf /opt/wildfly/standalone/configuration/standalone.conf
+COPY contrib/wfcfg/standalone.conf /opt/wildfly/standalone/configuration/custom/standalone.conf
 COPY s2i/bin/run /usr/libexec/s2i/run
 COPY contrib/jolokia-jvm-1.6.2-agent.jar /usr/libexec/s2i/jolokia-jvm-1.6.2-agent.jar
 COPY contrib/jacocoagent.jar /usr/libexec/s2i/jacocoagent.jar
