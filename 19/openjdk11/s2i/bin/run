@@ -34,7 +34,14 @@ if [ "$JACOCO_AGENT_ENABLE" == 1 ]; then
 	echo "···································································································"
 fi
 
+if [ ! -f $WILDFLY_DIR/jolokia.jks ]; then
+	echo "···································································································"
+	echo "GENERATE JOLOKIA KEYSTORE"
+	keytool -genkey -keyalg RSA -alias selfsigned -keystore $WILDFLY_DIR/jolokia.jks -storepass password -validity 360 -keysize 2048 -dname "cn=jolokia, ou=jolokia, o=jolokia, c=jolokia" &>/dev/null
+	echo "···································································································"
+fi
+
+
 cat $WILDFLY_DIR/standalone/configuration/custom/standalone.conf > $WILDFLY_DIR/bin/standalone.conf
-keytool -genkey -keyalg RSA -alias selfsigned -keystore $WILDFLY_DIR/jolokia.jks -storepass password -validity 360 -keysize 2048 -dname "cn=jolokia, ou=jolokia, o=jolokia, c=jolokia"
 rm -rf $WILDFLY_DIR/standalone/tmp $WILDFLY_DIR/standalone/data $WILDFLY_DIR/standalone/logs $WILDFLY_DIR/standalone/deployments/*.deployed
 exec $WILDFLY_DIR/bin/standalone.sh -c custom/standalone.xml -b 0.0.0.0
