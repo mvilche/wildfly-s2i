@@ -6,26 +6,21 @@
 ![Docker Build](https://img.shields.io/docker/cloud/build/mvilche/wildfly-s2i)
 
 
-# Funcionalidades:
+# Features
 
 - Non-root
-- Openshift compatible
+- Openshift ready!
 - Jolokia Agent
-- Jacoco Agent
 - Maven
-- Mkdocs integration
 
 ### Variables
 
 
 | Variable | Detalle |
 | ------ | ------ |
-| TIMEZONE | Define la zona horaria a utilizar (America/Montevideo, America/El_salvador) |
-| NEXUS_MIRROR_URL | Define url repositorio nexus para la descarga de dependencias |
-| EXTRA_REPO | Define url repositorio git extra compila previo |
-| MVN_OPTS | Variable usada argumentos adicionales maven |
-| MKDOCS_DIR | Directorio donde se encuentra mkdocs.yml - Ejemplo: documentation |
-| MKDOCS_CONTEXT_PATH | Nombre del context path donde instalará la documentación. Por defecto es / - Ejemplo: documentation |
+| TIMEZONE | Set Timezone (America/Montevideo, America/El_salvador) |
+| NEXUS_MIRROR_URL | custom nexus mirror url |
+| MVN_OPTS | Custom maven options in build |
 
 
 
