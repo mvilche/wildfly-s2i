@@ -9,7 +9,7 @@
 # Features
 
 - Non-root
-- Openshift ready!
+- Okd ready!
 - Jolokia Agent
 - Maven
 
