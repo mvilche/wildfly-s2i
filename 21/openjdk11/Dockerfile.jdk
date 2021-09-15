@@ -39,7 +39,9 @@ chgrp -R 0 /opt /home/s2i /usr/libexec/s2i /etc/localtime /etc/timezone  && \
 chmod -R g=u /opt /usr/libexec/s2i /etc/localtime /etc/timezone
 WORKDIR /opt/wildfly
 ENV HOME /home/s2i
+
 USER 1001
+
 EXPOSE 8080 8009 8778 8443
 CMD ["/usr/libexec/s2i/usage"]
 

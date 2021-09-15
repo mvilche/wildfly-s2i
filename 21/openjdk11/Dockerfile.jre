@@ -32,6 +32,8 @@ chown -R 1001 /opt /usr/libexec/s2i /etc/localtime /etc/timezone  && \
 chgrp -R 0 /opt /usr/libexec/s2i /etc/localtime /etc/timezone  && \
 chmod -R g=u /opt /usr/libexec/s2i /etc/localtime /etc/timezone
 WORKDIR /opt/wildfly
+
 USER 1001
+
 EXPOSE 8080 8778 8009 8443
 CMD ["/usr/libexec/s2i/run"]
