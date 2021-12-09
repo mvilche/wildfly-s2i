@@ -1,4 +1,4 @@
-# Wildfly s2i images - Linux Alpine
+# Wildfly S2i images - Linux Alpine
 
 ![Docker Stars](https://img.shields.io/docker/stars/mvilche/wildfly-s2i.svg)
 ![Docker Pulls](https://img.shields.io/docker/pulls/mvilche/wildfly-s2i.svg)
