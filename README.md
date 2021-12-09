@@ -10,23 +10,74 @@
 
 - Non-root
 - Okd ready!
-- Jolokia Agent
-- Maven
+- Kubernetes ready!
+- Jolokia Agent JMX Metrics
+- Prometheus JMX Exporter Metrics
+- Maven 3.8.4
 
-### Build Environments 
+
+### Deploy Environment Variables 
 
 
-| Variable | Detalle |
+| Variable | Details |
 | ------ | ------ |
 | TIMEZONE | Set Timezone (America/Montevideo, America/El_salvador) |
-| NEXUS_MIRROR_URL | custom nexus mirror url |
-| MVN_OPTS | Custom maven options in build |
+| WAITFOR_HOST | set name host |
+| WAITFOR_PORT | set port for WAITFOR_HOST |
+| JOLOKIA_ENABLE | Enable jolokia jmx monitoring|
+| PROMETHEUS_ENABLE | Enable prometheus jmx monitoring |
+| EXTRA_JAVA_OPTS | Add options to default JAVA_OPTS options|
+| JAVA_OPTS | Override JAVA_OPTS options|
 
 
 
-### Openshift Install example
+### Build Environment Variables 
 
-oc create -f 21/wildfly-21-s2i-template.yaml
+| Variable | Details |
+| ------ | ------ |
+| MVN_OPTS | Maven options  |
+| NEXUS_MIRROR_URL | Nexus repository override repository in pom.xml |
+
+
+### Generate builder image
+
+```console
+
+Example build Wildfly 25 jdk 11
+
+ docker build -t wildfly-s2i:25-jdk11 -f 25/Dockerfile.jdk11 contrib
+
+```
+
+### Wildfly application image use s2i
+
+```console
+
+Example build app using Wildfly 25 builder image
+
+s2i build https://github.com/myuser/sample-app.git wildfly-s2i:25-jdk11 myapp:latest --incremental
+
+```
+
+
+### Run application
+
+```console
+
+docker run -p 8080:8080 myapp:latest
+
+```
+
+### How use s2i
+
+```console
+
+https://github.com/openshift/source-to-image
+
+```
+
+
+
 
 License
 ----

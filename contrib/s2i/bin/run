@@ -1,0 +1,84 @@
+#!/bin/bash -e
+#
+# S2I run script for the 'springboot-sti' image.
+# The run script executes the server that runs your application.
+#
+# For more information see the documentation:
+#	https://github.com/openshift/source-to-image/blob/master/docs/builder_image.md
+#
+
+
+if [ -z "$WILDFLY_DIR" ]; then
+echo "FATAL - WILDFLY_DIR ENV NOT FOUND!"
+exit 1
+fi
+
+if [ -z "$TIMEZONE" ]; then
+        echo "···································································································"
+        echo "---> TIMEZONE ENV NOT FOUND - START WITH DEFAULT VALUES"
+        echo "---> VALUES: America/Montevideo | America/El_Salvador"
+        echo "···································································································"
+else
+        echo "···································································································"
+        echo "---> TIMEZONE ENV FOUND!: " $TIMEZONE
+        echo "···································································································"
+        cat /usr/share/zoneinfo/$TIMEZONE > /etc/localtime && \
+        echo $TIMEZONE > /etc/timezone
+fi
+
+
+if [ ! -z "$WAITFOR_HOST" ] && [ ! -z "$WAITFOR_PORT" ] ; then
+        echo "···································································································"
+        echo "---->  WAITFOR  ENABLE.."
+    until nc -z -v -w5 $WAITFOR_HOST $WAITFOR_PORT &> /dev/null; do echo waiting for $WAITFOR_HOST; sleep 10; done;
+        echo "···································································································"
+fi
+
+
+
+
+if [ "$PROMETHEUS_ENABLE" == 1 ] && [ "$JOLOKIA_ENABLE" == 1 ]; then
+echo "---->  ERROR -  FOUND PROMETHEUS_ENABLE = 1 AND JOLOKIA_ENABLE = 1"
+echo "---->  YOU MUST SELECT ONE!"
+echo "---->  CONTINUING WITHOUT ACTIVE METRICS...."
+export PROMETHEUS_ENABLE=0
+export JOLOKIA_ENABLE=0
+else
+export PRECHECK=1
+fi
+
+if [ "$JOLOKIA_ENABLE" == 1 ] && [ "$PRECHECK" == 1 ] ; then
+echo "---->  JOLOKIA_ENABLE FOUND!.."
+echo "---->  METRICS ENDPOINT 0.0.0.0:8787/jolokia"
+export JMX_METRICS=-javaagent:/usr/libexec/s2i/jolokia.jar=host=0.0.0.0,protocol=http,port=8787
+fi
+
+if [ "$PROMETHEUS_ENABLE" == 1 ] && [ "$PRECHECK" == 1 ]; then
+echo "---->  PROMETHEUS_ENABLE FOUND!.."
+echo "---->  METRICS ENDPOINT 0.0.0.0:8787/metrics"
+export JMX_METRICS=-javaagent:/usr/libexec/s2i/prometheus.jar=0.0.0.0:8787:/usr/libexec/s2i/prometheus-config.yml
+fi
+
+
+if [ -v "$EXTRA_JAVA_OPTS" ]; then
+        echo "···································································································"
+        echo "---> EXTRA_JAVA_OPTS ENV FOUND! - ADD VALUES TO DEFAULT JAVA_OPTS: " $EXTRA_JAVA_OPTS
+        echo "···································································································"
+fi
+
+if [ -v "$JAVA_OPTS" ]; then
+        echo "···································································································"
+        echo "---> JAVA_OPTS ENV FOUND! - OVERRIDE DEFAULT JAVA_OPTS WITH VALUES: " $JAVA_OPTS
+        echo "···································································································"
+fi
+
+	echo "···································································································"
+	echo "STARTING APPLICATION..."
+	echo "···································································································"
+
+cat $WILDFLY_DIR/standalone/configuration/custom/standalone.conf > $WILDFLY_DIR/bin/standalone.conf
+cat $WILDFLY_DIR/standalone/configuration/custom/standalone.xml > $WILDFLY_DIR/standalone/configuration/standalone.xml
+
+rm -rf $WILDFLY_DIR/standalone/tmp $WILDFLY_DIR/standalone/data $WILDFLY_DIR/standalone/logs $WILDFLY_DIR/standalone/deployments/*.deployed
+
+exec $WILDFLY_DIR/bin/standalone.sh -c custom/standalone.xml -b 0.0.0.0

@@ -1,0 +1,117 @@
+#!/bin/bash -e
+#
+# S2I assemble script for the 's2i-maven-java' image.
+# The 'assemble' script builds your application source so that it is ready to run.
+#
+# For more information refer to the documentation:
+#	https://github.com/openshift/source-to-image/blob/master/docs/builder_image.md
+#
+
+set -e
+
+
+shopt -u dotglob
+
+
+
+clean() {
+
+
+rm -rf /tmp/*
+echo "---> CLEAN TASKS FINISH!"
+
+}
+
+
+finishStep() {
+
+ls -1 /opt/wildfly/standalone/deployments/ && echo "---> APP INSTALL OK!"
+
+echo "---> FIX PERMISSIONS DIR"
+/usr/libexec/s2i/fix /opt
+/usr/libexec/s2i/fix /home/s2i
+
+cd $HOME && rm -rf /opt/src
+
+clean
+
+echo "---> INSTALL FINISH!"
+exit 0
+
+}
+
+
+if [[ "$1" == "-h" ]]; then
+	exec /usr/libexec/s2i/usage
+fi
+
+if [ ! -f /tmp/src/pom.xml ]; then
+  echo "---> FATAL - pom.xml NOT FOUND!"
+  exit 1
+fi
+
+
+if [ -d /tmp/artifacts/.m2 ]; then
+  echo "---> RESTORING ARTIFACTS FROM CACHE..."
+  mv /tmp/artifacts/.m2 /home/s2i/
+fi
+
+echo "---> INSTALL SOURCE CODE..."
+mkdir /opt/src
+cp -Rf /tmp/src/* /opt/src/
+
+
+if [ -z "$NEXUS_MIRROR_URL" ]; then
+echo "---> NEXUS_MIRROR_URL NOT FOUND!"
+else
+echo "---> NEXUS_MIRROR_URL FOUND! - SETTING REPOSITORY..."
+
+if [ ! -d /home/s2i/.m2 ]; then
+  mkdir /home/s2i/.m2
+  touch /home/s2i/.m2/settings.xml
+fi
+cat << EOF > /home/s2i/.m2/settings.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <mirrors>
+    <mirror>
+      <id>central</id>
+      <name>central</name>
+      <url>$NEXUS_MIRROR_URL</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>
+EOF
+fi
+
+echo "---> USING JAVA VERSION"
+java -version
+echo "---> BUILD START..."
+echo "----> EXECUTING mvn clean package -Dfile.encoding=UTF-8 ${MVN_OPTS}"
+cd /opt/src && mvn clean package -Dfile.encoding=UTF-8 ${MVN_OPTS}
+
+ERR=$?
+    if [ $ERR -ne 0 ]; then
+echo "---> BUILD ERROR -  $ERR"
+exit $ERR
+
+fi
+
+echo "---> COPY APPLICATION TO DEPLOY DIR..."
+find /opt/src/ -iname '*.war' -exec cp {} /opt/wildfly/standalone/deployments \;
+find /opt/src/ -iname '*.ear' -exec cp {} /opt/wildfly/standalone/deployments \;
+echo "---> INSTALL APPLICATION OK!" 
+war=`ls -1 /opt/wildfly/standalone/deployments/*.war 2>/dev/null | wc -l`
+ear=`ls -1 /opt/wildfly/standalone/deployments/*.ear 2>/dev/null | wc -l`
+
+echo "---> EAR FOUND $ear"
+echo "---> WAR FOUND $war"
+
+if [ "$war" != 0 ] && [ "$ear" != 0 ]; then
+echo "---> DELETE WAR AND KEEP EAR"
+rm -rf /opt/wildfly/standalone/deployments/*.war
+fi
+
+
+finishStep
