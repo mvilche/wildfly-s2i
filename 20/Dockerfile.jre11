@@ -1,9 +1,7 @@
 FROM alpine:3.15
 
 ENV JDK_VERSION=openjdk11-jre \
-JAVA_VERSION=11 \
-WILDFLY_URL=https://download.jboss.org/wildfly/20.0.0.Final/wildfly-20.0.0.Final.tar.gz \
-WILDFLY_VERSION=20
+JAVA_VERSION=11
 
 LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
       io.k8s.description="Runtime image jdk alpine" \
@@ -15,8 +13,12 @@ LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
 
 RUN apk --no-cache upgrade --available && apk add --update --no-cache $JDK_VERSION wget bash tzdata curl nodejs msttcorefonts-installer fontconfig && \
     update-ms-fonts && \
-    fc-cache -f && \
-wget $WILDFLY_URL --progress=bar:force -O /tmp/wildfly.tar.gz && \
+    fc-cache -f
+
+ENV WILDFLY_URL=https://download.jboss.org/wildfly/20.0.0.Final/wildfly-20.0.0.Final.tar.gz \
+WILDFLY_VERSION=20
+
+RUN wget $WILDFLY_URL --progress=bar:force -O /tmp/wildfly.tar.gz && \
 mkdir -p /opt/wildfly /opt/config && tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp/wildfly.tar.gz
 
 COPY wf-modules /opt/wildfly/modules/

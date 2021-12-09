@@ -1,9 +1,7 @@
 FROM alpine:3.15
 
 ENV JDK_VERSION=openjdk11-jre \
-JAVA_VERSION=11 \
-WILDFLY_URL=https://github.com/wildfly/wildfly/releases/download/25.0.1.Final/wildfly-25.0.1.Final.tar.gz \
-WILDFLY_VERSION=25
+JAVA_VERSION=11
 
 LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
       io.k8s.description="Runtime image jdk alpine" \
@@ -15,15 +13,20 @@ LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
 
 RUN apk --no-cache upgrade --available && apk add --update --no-cache $JDK_VERSION wget bash tzdata curl nodejs msttcorefonts-installer fontconfig && \
     update-ms-fonts && \
-    fc-cache -f && \
-wget $WILDFLY_VERSION --progress=bar:force -O /tmp/wildfly.tar.gz && \
+    fc-cache -f &&
+
+
+ENV WILDFLY_URL=https://github.com/wildfly/wildfly/releases/download/25.0.1.Final/wildfly-25.0.1.Final.tar.gz \
+WILDFLY_VERSION=25
+
+RUN wget $WILDFLY_VERSION --progress=bar:force -O /tmp/wildfly.tar.gz && \
 mkdir -p /opt/wildfly /opt/config && tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp/wildfly.tar.gz
 
 COPY wf-modules /opt/wildfly/modules/
 
-COPY wf-config/25.standalone.xml /opt/wildfly/standalone/configuration/custom/standalone.xml
+COPY wf-config/$WILDFLY_VERSION.standalone.xml /opt/wildfly/standalone/configuration/custom/standalone.xml
 
-COPY wf-config/25.standalone.xml /opt/wildfly/standalone/configuration/standalone.xml
+COPY wf-config/$WILDFLY_VERSION.standalone.xml /opt/wildfly/standalone/configuration/standalone.xml
 
 COPY wf-config/standalone.conf /opt/wildfly/bin/standalone.conf
 
