@@ -36,7 +36,7 @@ fi
 
 
 
-
+export JMX_METRICS=""
 if [ "$PROMETHEUS_ENABLE" == 1 ] && [ "$JOLOKIA_ENABLE" == 1 ]; then
 echo "---->  ERROR -  FOUND PROMETHEUS_ENABLE = 1 AND JOLOKIA_ENABLE = 1"
 echo "---->  YOU MUST SELECT ONE!"
