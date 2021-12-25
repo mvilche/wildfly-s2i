@@ -14,6 +14,7 @@
 - Jolokia Agent JMX Metrics
 - Prometheus JMX Exporter Metrics
 - Maven 3.8.4
+- OpenJdk and OpenJre images
 
 
 ### Deploy Environment Variables 
@@ -24,10 +25,10 @@
 | TIMEZONE | Set Timezone (America/Montevideo, America/El_salvador) |
 | WAITFOR_HOST | set name host |
 | WAITFOR_PORT | set port for WAITFOR_HOST |
-| JOLOKIA_ENABLE | Enable jolokia jmx monitoring|
-| PROMETHEUS_ENABLE | Enable prometheus jmx monitoring |
-| EXTRA_JAVA_OPTS | Add options to default JAVA_OPTS options|
-| JAVA_OPTS | Override JAVA_OPTS options|
+| JOLOKIA_ENABLE | Enable jolokia jmx monitoring - Values: 1 (Enable), 0 (Disable - default value)|
+| PROMETHEUS_ENABLE | Enable prometheus jmx monitoring - Values: 1 (Enable), 0 (Disable - default value)|
+| EXTRA_JAVA_OPTS | Add options to default JAVA_OPTS options |
+| JAVA_OPTS | Override JAVA_OPTS options |
 
 
 
@@ -35,7 +36,7 @@
 
 | Variable | Details |
 | ------ | ------ |
-| MVN_OPTS | Maven options  |
+| MVN_OPTS | Maven options |
 | NEXUS_MIRROR_URL | Nexus repository override repository in pom.xml |
 
 
