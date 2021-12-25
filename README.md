@@ -15,6 +15,7 @@
 - Prometheus JMX Exporter Metrics
 - Maven 3.8.4
 - OpenJdk and OpenJre images
+- Openjdk 11 y 8 Support
 
 
 ### Deploy Environment Variables 
