@@ -59,6 +59,23 @@ echo "---->  METRICS ENDPOINT 0.0.0.0:8787/metrics"
 export JMX_METRICS=-javaagent:/usr/libexec/s2i/prometheus.jar=0.0.0.0:8787:/usr/libexec/s2i/prometheus-config.yml
 fi
 
+if [ "$GLOWROOT_ENABLE" == 1 ] && [ "$PRECHECK" == 1 ] ; then
+echo "---->  GLOWROOT_ENABLE FOUND!.."
+if [ ! -z "$GLOWROOT_CENTRAL_COLLECTOR" ]; then
+echo "---->  GLOWROOT_CENTRAL_COLLECTOR FOUND!.."
+echo "---->  SEND GLOWROOT METRICS TO $GLOWROOT_CENTRAL_COLLECTOR"
+echo "collector.address=$GLOWROOT_CENTRAL_COLLECTOR" > /usr/libexec/s2i/glowroot/glowroot.properties
+if [ ! -z "$GLOWROOT_CENTRAL_COLLECTOR_AGENTID" ]; then
+echo "---->  GLOWROOT_CENTRAL_COLLECTOR_AGENTID FOUND!.."
+echo "---->  USING agent.id $GLOWROOT_CENTRAL_COLLECTOR_AGENTID"
+echo "agent.id=$GLOWROOT_CENTRAL_COLLECTOR_AGENTID" >> /usr/libexec/s2i/glowroot/glowroot.properties
+fi
+fi
+echo "---->  METRICS ENDPOINT 0.0.0.0:8778/"
+JMX_METRICS=-javaagent:/usr/libexec/s2i/glowroot/glowroot.jar
+fi
+
+
 
 if [ -v "$EXTRA_JAVA_OPTS" ]; then
         echo "···································································································"
