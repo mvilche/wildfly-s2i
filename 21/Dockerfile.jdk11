@@ -46,6 +46,8 @@ COPY plugins/jmx_prometheus-0.16.1.jar /usr/libexec/s2i/prometheus.jar
 
 COPY plugins/prometheus-config.yml /usr/libexec/s2i/prometheus-config.yml
 
+COPY plugins/glowroot /usr/libexec/s2i/glowroot
+
 COPY s2i/bin/ /usr/libexec/s2i
 
 RUN touch /etc/localtime /etc/timezone && adduser -D -u 1001 s2i && usermod -aG 0 s2i && \
