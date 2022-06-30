@@ -88,6 +88,17 @@ fi
 echo "---> USING JAVA VERSION"
 java -version
 echo "---> BUILD START..."
+if [ ! -z "$MVN_OVERRIDE_COMMAND" ]; then
+echo "----> MVN_OVERRIDE_COMMAND DETECTED!"
+echo "----> EXECUTING ${MVN_OVERRIDE_COMMAND}"
+cd /opt/src && eval "${MVN_OVERRIDE_COMMAND}"
+
+ERR=$?
+    if [ $ERR -ne 0 ]; then
+echo "---> COMPILE ERROR $ERR"
+exit $ERR
+fi
+else
 echo "----> EXECUTING mvn clean package -Dfile.encoding=UTF-8 ${MVN_OPTS}"
 cd /opt/src && mvn clean package -Dfile.encoding=UTF-8 ${MVN_OPTS}
 
@@ -96,6 +107,7 @@ ERR=$?
 echo "---> BUILD ERROR -  $ERR"
 exit $ERR
 
+fi
 fi
 
 echo "---> COPY APPLICATION TO DEPLOY DIR..."

@@ -38,7 +38,10 @@
 | Variable | Details |
 | ------ | ------ |
 | MVN_OPTS | Maven options |
+| MVN_OVERRIDE_COMMAND | Override default maven command |
 | NEXUS_MIRROR_URL | Nexus repository override repository in pom.xml |
+
+
 
 
 ### Generate builder image
