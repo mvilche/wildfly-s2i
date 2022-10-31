@@ -96,6 +96,6 @@ fi
 cat $WILDFLY_DIR/standalone/configuration/custom/standalone.conf > $WILDFLY_DIR/bin/standalone.conf
 cat $WILDFLY_DIR/standalone/configuration/custom/standalone.xml > $WILDFLY_DIR/standalone/configuration/standalone.xml
 
-rm -rf $WILDFLY_DIR/standalone/tmp $WILDFLY_DIR/standalone/data $WILDFLY_DIR/standalone/logs $WILDFLY_DIR/standalone/deployments/*.deployed
+#rm -rf $WILDFLY_DIR/standalone/tmp $WILDFLY_DIR/standalone/data $WILDFLY_DIR/standalone/logs $WILDFLY_DIR/standalone/deployments/*.deployed
 
 exec $WILDFLY_DIR/bin/standalone.sh -c custom/standalone.xml -b 0.0.0.0
