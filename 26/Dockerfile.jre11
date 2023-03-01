@@ -1,4 +1,4 @@
-FROM alpine:3.15
+FROM alpine:3.17
 
 ENV JDK_VERSION=openjdk11-jre \
 JAVA_VERSION=11
@@ -13,13 +13,13 @@ LABEL autor="Martin Vilche <mfvilche@gmail.com>" \
 
 RUN apk --no-cache upgrade --available && apk add --update --no-cache $JDK_VERSION findutils wget bash tzdata curl nodejs msttcorefonts-installer fontconfig shadow busybox-extras && \
     update-ms-fonts && \
-    fc-cache -f &&
+    fc-cache -f
 
 
-ENV WILDFLY_URL=https://github.com/wildfly/wildfly/releases/download/26.0.0.Final/wildfly-26.0.0.Final.tar.gz \
+ENV WILDFLY_URL=https://github.com/wildfly/wildfly/releases/download/26.1.2.Final/wildfly-26.1.2.Final.tar.gz \
 WILDFLY_VERSION=26
 
-RUN wget $WILDFLY_VERSION --progress=bar:force -O /tmp/wildfly.tar.gz && \
+RUN wget $WILDFLY_URL --progress=bar:force -O /tmp/wildfly.tar.gz && \
 mkdir -p /opt/wildfly /opt/config && tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp/wildfly.tar.gz
 
 COPY wf-modules /opt/wildfly/modules/

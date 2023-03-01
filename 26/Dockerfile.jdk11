@@ -1,6 +1,6 @@
-FROM alpine:3.15
+FROM alpine:3.17
 
-ENV MAVEN_VERSION=3.8.6 \
+ENV MAVEN_VERSION=3.9.0 \
 JDK_VERSION=openjdk11-jdk \
 JAVA_VERSION=11
 
@@ -23,7 +23,7 @@ ln -s /opt/maven/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/bin/mvn && \
     update-ms-fonts && \
     fc-cache -f
 
-ENV WILDFLY_URL=https://github.com/wildfly/wildfly/releases/download/26.0.0.Final/wildfly-26.0.0.Final.tar.gz \
+ENV WILDFLY_URL=https://github.com/wildfly/wildfly/releases/download/26.1.2.Final/wildfly-26.1.2.Final.tar.gz \
 WILDFLY_VERSION=26
 
 RUN wget $WILDFLY_URL --progress=bar:force -O /tmp/wildfly.tar.gz && \

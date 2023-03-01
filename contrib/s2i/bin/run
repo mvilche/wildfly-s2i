@@ -93,6 +93,12 @@ fi
 	echo "STARTING APPLICATION..."
 	echo "···································································································"
 
+	echo "···································································································"
+	echo "USING JAVA VERSION..."
+        java -version
+	echo "···································································································"
+
+
 cat $WILDFLY_DIR/standalone/configuration/custom/standalone.conf > $WILDFLY_DIR/bin/standalone.conf
 cat $WILDFLY_DIR/standalone/configuration/custom/standalone.xml > $WILDFLY_DIR/standalone/configuration/standalone.xml
 
