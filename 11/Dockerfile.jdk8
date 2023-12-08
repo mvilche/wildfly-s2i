@@ -1,6 +1,6 @@
-FROM alpine:3.17
+FROM alpine:3.18
 
-ENV MAVEN_VERSION=3.9.0 \
+ENV MAVEN_VERSION=3.9.4 \
 JDK_VERSION=openjdk8 \
 JAVA_VERSION=8
 
@@ -39,9 +39,9 @@ COPY wf-config/standalone.conf /opt/wildfly/bin/standalone.conf
 
 COPY wf-config/standalone.conf /opt/wildfly/standalone/configuration/custom/standalone.conf
 
-COPY plugins/jolokia-jvm-1.6.2-agent.jar /usr/libexec/s2i/jolokia.jar
+COPY plugins/jolokia-jvm-1.7.2-agent.jar /usr/libexec/s2i/jolokia.jar
 
-COPY plugins/jmx_prometheus-0.16.1.jar /usr/libexec/s2i/prometheus.jar
+COPY plugins/jmx_prometheus-0.20.0.jar /usr/libexec/s2i/prometheus.jar
 
 COPY plugins/prometheus-config.yml /usr/libexec/s2i/prometheus-config.yml
 

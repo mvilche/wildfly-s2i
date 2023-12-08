@@ -1,4 +1,4 @@
-FROM alpine:3.17
+FROM alpine:3.18
 
 ENV JDK_VERSION=openjdk11-jre \
 JAVA_VERSION=11
@@ -16,13 +16,15 @@ RUN apk --no-cache upgrade --available && apk add --update --no-cache $JDK_VERSI
     fc-cache -f
 
 
-ENV WILDFLY_URL=https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.tar.gz \
+ENV WILDFLY_URL=https://github.com/wildfly/wildfly/releases/download/27.0.1.Final/wildfly-27.0.1.Final.tar.gz \
 WILDFLY_VERSION=27
 
 RUN wget $WILDFLY_URL --progress=bar:force -O /tmp/wildfly.tar.gz && \
 mkdir -p /opt/wildfly /opt/config && tar zxvf /tmp/wildfly.tar.gz -C /opt/wildfly --strip-components 1 && rm -rf /tmp/wildfly.tar.gz
 
 COPY wf-modules /opt/wildfly/modules/
+
+COPY wf-modules-custom/system /opt/wildfly/modules/system
 
 COPY wf-config/$WILDFLY_VERSION.standalone.xml /opt/wildfly/standalone/configuration/custom/standalone.xml
 
@@ -32,9 +34,9 @@ COPY wf-config/standalone.conf /opt/wildfly/bin/standalone.conf
 
 COPY wf-config/standalone.conf /opt/wildfly/standalone/configuration/custom/standalone.conf
 
-COPY plugins/jolokia-jvm-1.6.2-agent.jar /usr/libexec/s2i/jolokia.jar
+COPY plugins/jolokia-jvm-1.7.2-agent.jar /usr/libexec/s2i/jolokia.jar
 
-COPY plugins/jmx_prometheus-0.16.1.jar /usr/libexec/s2i/prometheus.jar
+COPY plugins/jmx_prometheus-0.20.0.jar /usr/libexec/s2i/prometheus.jar
 
 COPY plugins/prometheus-config.yml /usr/libexec/s2i/prometheus-config.yml
 
